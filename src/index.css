@@ -1,0 +1,68 @@
+@import "tailwindcss";
+@import "@heroui/react/styles";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color-scheme: dark;
+}
+
+html.light {
+  color-scheme: light;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(113, 113, 122, 0.3);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(113, 113, 122, 0.5);
+}
+
+/* Card hover effect */
+.stat-card-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.stat-card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.2);
+}
+
+/* Light mode overrides */
+html.light .stat-card-hover:hover {
+  box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.08);
+}
+
+/* Skeleton loading animation */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.skeleton-shimmer {
+  background: linear-gradient(90deg, transparent 25%, rgba(255,255,255,0.08) 50%, transparent 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Chart container responsive */
+.recharts-responsive-container {
+  min-height: 0 !important;
+}
+
+/* Select/option dark mode */
+.dark select option {
+  background-color: #18181b;
+  color: #d4d4d8;
+}
