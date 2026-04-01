@@ -25,6 +25,7 @@ const Select = React.forwardRef(
           borderColor: 'var(--border-input)',
           borderWidth: '1px',
           color: 'var(--text-primary)',
+          fontWeight: '500',
           backgroundImage:
             "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236366f1' d='M6 9L1 4h10z'/%3E%3C/svg%3E\")",
           backgroundRepeat: 'no-repeat',
@@ -36,12 +37,12 @@ const Select = React.forwardRef(
         {...props}
       >
         {placeholder && !value && (
-          <option value="" disabled>
+          <option value="" disabled style={{ backgroundColor: 'var(--bg-surface)', color: 'var(--text-primary)', padding: '8px' }}>
             {placeholder}
           </option>
         )}
         {options.map((option) => (
-          <option key={option.value} value={option.value}>
+          <option key={option.value} value={option.value} style={{ backgroundColor: 'var(--bg-surface)', color: 'var(--text-primary)', padding: '8px' }}>
             {option.label}
           </option>
         ))}

@@ -1,5 +1,13 @@
 import { create } from 'zustand';
 import { transactions as initialTransactions } from '../data/mockData';
+import {
+  getTransactions,
+  createTransaction as apiCreateTransaction,
+  updateTransaction as apiUpdateTransaction,
+  deleteTransaction as apiDeleteTransaction,
+  getAnalytics,
+  getMonthlyTrend,
+} from '../services/api';
 
 // Detect system theme preference
 const getSystemTheme = () => {
@@ -59,30 +67,172 @@ const useStore = create((set, get) => ({
 
   // Transaction state
   transactions: initialTransactions,
+  isTransactionLoading: false,
+  transactionError: null,
   
-  addTransaction: (transaction) => set((state) => ({
-    transactions: [
-      {
-        ...transaction,
-        id: Math.max(0, ...state.transactions.map(t => t.id)) + 1,
-      },
-      ...state.transactions,
-    ],
-  })),
+  // Initialize transactions on app start
+  initializeTransactions: async () => {
+    set({ isTransactionLoading: true });
+    try {
+      const response = await getTransactions();
+      if (response.success) {
+        set({ 
+          transactions: response.data.transactions,
+          transactionError: null,
+        });
+      } else {
+        set({ transactionError: response.error.message });
+      }
+    } catch (error) {
+      set({ transactionError: error.message });
+    } finally {
+      set({ isTransactionLoading: false });
+    }
+  },
 
-  updateTransaction: (id, updates) => set((state) => ({
-    transactions: state.transactions.map(t =>
-      t.id === id ? { ...t, ...updates } : t
-    ),
-  })),
+  fetchTransactions: async (filters = {}) => {
+    set({ isTransactionLoading: true });
+    try {
+      const response = await getTransactions(filters);
+      if (response.success) {
+        set({ 
+          transactions: response.data.transactions,
+          transactionError: null,
+        });
+        return response;
+      } else {
+        set({ transactionError: response.error.message });
+        return response;
+      }
+    } catch (error) {
+      set({ transactionError: error.message });
+      return { success: false, error: { message: error.message } };
+    } finally {
+      set({ isTransactionLoading: false });
+    }
+  },
 
-  deleteTransaction: (id) => set((state) => ({
-    transactions: state.transactions.filter(t => t.id !== id),
-  })),
+  addTransaction: async (transaction) => {
+    set({ isTransactionLoading: true });
+    try {
+      const response = await apiCreateTransaction(transaction);
+      if (response.success) {
+        // Update local state with new transaction
+        set((state) => ({
+          transactions: [response.data.transaction, ...state.transactions],
+          transactionError: null,
+        }));
+        return response;
+      } else {
+        set({ transactionError: response.error.message });
+        return response;
+      }
+    } catch (error) {
+      set({ transactionError: error.message });
+      return { success: false, error: { message: error.message } };
+    } finally {
+      set({ isTransactionLoading: false });
+    }
+  },
+
+  updateTransaction: async (id, updates) => {
+    set({ isTransactionLoading: true });
+    try {
+      const response = await apiUpdateTransaction(id, updates);
+      if (response.success) {
+        // Update local state
+        set((state) => ({
+          transactions: state.transactions.map(t =>
+            t.id === id ? response.data.transaction : t
+          ),
+          transactionError: null,
+        }));
+        return response;
+      } else {
+        set({ transactionError: response.error.message });
+        return response;
+      }
+    } catch (error) {
+      set({ transactionError: error.message });
+      return { success: false, error: { message: error.message } };
+    } finally {
+      set({ isTransactionLoading: false });
+    }
+  },
+
+  deleteTransaction: async (id) => {
+    set({ isTransactionLoading: true });
+    try {
+      const response = await apiDeleteTransaction(id);
+      if (response.success) {
+        // Update local state
+        set((state) => ({
+          transactions: state.transactions.filter(t => t.id !== id),
+          transactionError: null,
+        }));
+        return response;
+      } else {
+        set({ transactionError: response.error.message });
+        return response;
+      }
+    } catch (error) {
+      set({ transactionError: error.message });
+      return { success: false, error: { message: error.message } };
+    } finally {
+      set({ isTransactionLoading: false });
+    }
+  },
 
   // Navigation state
   activePage: 'dashboard', // 'dashboard' | 'transactions' | 'settings'
   setActivePage: (page) => set({ activePage: page }),
+
+  // Analytics state
+  analytics: null,
+  analyticsLoading: false,
+  analyticsError: null,
+
+  fetchAnalytics: async () => {
+    set({ analyticsLoading: true });
+    try {
+      const response = await getAnalytics();
+      if (response.success) {
+        set({
+          analytics: response.data,
+          analyticsError: null,
+        });
+      } else {
+        set({ analyticsError: response.error.message });
+      }
+    } catch (error) {
+      set({ analyticsError: error.message });
+    } finally {
+      set({ analyticsLoading: false });
+    }
+  },
+
+  monthlyTrend: null,
+  trendLoading: false,
+  trendError: null,
+
+  fetchMonthlyTrend: async () => {
+    set({ trendLoading: true });
+    try {
+      const response = await getMonthlyTrend();
+      if (response.success) {
+        set({
+          monthlyTrend: response.data,
+          trendError: null,
+        });
+      } else {
+        set({ trendError: response.error.message });
+      }
+    } catch (error) {
+      set({ trendError: error.message });
+    } finally {
+      set({ trendLoading: false });
+    }
+  },
 
   // Sidebar state
   sidebarOpen: true,
@@ -96,6 +246,56 @@ const useStore = create((set, get) => ({
   // Search state
   globalSearch: '',
   setGlobalSearch: (search) => set({ globalSearch: search }),
+
+  // Error management
+  setTransactionError: (error) => set({ transactionError: error }),
+  setAnalyticsError: (error) => set({ analyticsError: error }),
+  setTrendError: (error) => set({ trendError: error }),
+
+  // Profile state
+  profile: {
+    fullName: 'Alex Morgan',
+    email: 'alex@fintrack.io',
+    phone: '+1 (555) 123-4567',
+    country: 'United States',
+    countryCode: 'US',
+    state: 'California',
+    dialCode: '+1',
+    currency: 'USD',
+  },
+  setProfile: (profile) => {
+    // Persist to localStorage
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('fintrack-profile', JSON.stringify(profile));
+    }
+    set({ profile });
+  },
+  initProfile: () => {
+    if (typeof localStorage !== 'undefined') {
+      const saved = localStorage.getItem('fintrack-profile');
+      if (saved) {
+        try {
+          set({ profile: JSON.parse(saved) });
+        } catch (e) {
+          console.error('Failed to load profile:', e);
+        }
+      }
+    }
+  },
+
+  // Notifications state
+  notifications: [
+    { id: 1, type: 'transaction', title: 'Transaction Created', message: 'New expense recorded for $50.00', timestamp: new Date(Date.now() - 3600000), read: false },
+    { id: 2, type: 'budget', title: 'Budget Alert', message: 'You\'ve spent 75% of your monthly budget', timestamp: new Date(Date.now() - 7200000), read: false },
+    { id: 3, type: 'security', title: 'Security Update', message: 'Login from new device detected', timestamp: new Date(Date.now() - 86400000), read: true },
+  ],
+  addNotification: (notification) => set((state) => ({
+    notifications: [notification, ...state.notifications],
+  })),
+  markNotificationRead: (id) => set((state) => ({
+    notifications: state.notifications.map(n => n.id === id ? { ...n, read: true } : n),
+  })),
+  clearNotifications: () => set({ notifications: [] }),
 
   // Loading simulation
   isLoading: true,

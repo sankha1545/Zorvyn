@@ -27,13 +27,30 @@ export default function TransactionFilter({
               borderColor: 'var(--border-input)',
               borderWidth: '1px',
               color: 'var(--text-primary)',
+              fontWeight: '500',
+              padding: '6px 12px',
             }}
-            className="rounded-xl px-3 py-1.5 text-xs font-medium cursor-pointer outline-none transition-all"
-            onFocus={(e) => (e.target.style.borderColor = '#6366f1')}
-            onBlur={(e) => (e.target.style.borderColor = 'var(--border-input)')}
+            className="rounded-xl text-xs cursor-pointer outline-none transition-all"
+            onFocus={(e) => {
+              e.target.style.borderColor = '#6366f1';
+              e.target.style.backgroundColor = 'var(--bg-surface-hover)';
+            }}
+            onBlur={(e) => {
+              e.target.style.borderColor = 'var(--border-input)';
+              e.target.style.backgroundColor = 'var(--bg-input)';
+            }}
           >
             {typeOptions.map((opt) => (
-              <option key={opt} value={opt}>
+              <option 
+                key={opt} 
+                value={opt}
+                style={{
+                  backgroundColor: 'var(--bg-surface)',
+                  color: 'var(--text-primary)',
+                  padding: '8px',
+                  lineHeight: '1.5',
+                }}
+              >
                 {opt === 'All' ? 'All Types' : opt}
               </option>
             ))}
@@ -50,13 +67,30 @@ export default function TransactionFilter({
               borderColor: 'var(--border-input)',
               borderWidth: '1px',
               color: 'var(--text-primary)',
+              fontWeight: '500',
+              padding: '6px 12px',
             }}
-            className="rounded-xl px-3 py-1.5 text-xs font-medium cursor-pointer outline-none transition-all"
-            onFocus={(e) => (e.target.style.borderColor = '#6366f1')}
-            onBlur={(e) => (e.target.style.borderColor = 'var(--border-input)')}
+            className="rounded-xl text-xs cursor-pointer outline-none transition-all"
+            onFocus={(e) => {
+              e.target.style.borderColor = '#6366f1';
+              e.target.style.backgroundColor = 'var(--bg-surface-hover)';
+            }}
+            onBlur={(e) => {
+              e.target.style.borderColor = 'var(--border-input)';
+              e.target.style.backgroundColor = 'var(--bg-input)';
+            }}
           >
             {categoryOptions.map((opt) => (
-              <option key={opt} value={opt}>
+              <option 
+                key={opt} 
+                value={opt}
+                style={{
+                  backgroundColor: 'var(--bg-surface)',
+                  color: 'var(--text-primary)',
+                  padding: '8px',
+                  lineHeight: '1.5',
+                }}
+              >
                 {opt === 'All' ? 'All Categories' : opt}
               </option>
             ))}
@@ -73,13 +107,30 @@ export default function TransactionFilter({
               borderColor: 'var(--border-input)',
               borderWidth: '1px',
               color: 'var(--text-primary)',
+              fontWeight: '500',
+              padding: '6px 12px',
             }}
-            className="rounded-xl px-3 py-1.5 text-xs font-medium cursor-pointer outline-none transition-all"
-            onFocus={(e) => (e.target.style.borderColor = '#6366f1')}
-            onBlur={(e) => (e.target.style.borderColor = 'var(--border-input)')}
+            className="rounded-xl text-xs cursor-pointer outline-none transition-all"
+            onFocus={(e) => {
+              e.target.style.borderColor = '#6366f1';
+              e.target.style.backgroundColor = 'var(--bg-surface-hover)';
+            }}
+            onBlur={(e) => {
+              e.target.style.borderColor = 'var(--border-input)';
+              e.target.style.backgroundColor = 'var(--bg-input)';
+            }}
           >
             {statusOptions.map((opt) => (
-              <option key={opt} value={opt}>
+              <option 
+                key={opt} 
+                value={opt}
+                style={{
+                  backgroundColor: 'var(--bg-surface)',
+                  color: 'var(--text-primary)',
+                  padding: '8px',
+                  lineHeight: '1.5',
+                }}
+              >
                 {opt === 'All' ? 'All Status' : opt}
               </option>
             ))}

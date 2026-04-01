@@ -1,11 +1,15 @@
 import { Card, Switch, Separator, Chip } from '@heroui/react';
-import { User, Bell, Palette, Shield, Save } from 'lucide-react';
+import { User, Bell, Palette, Shield, Save, Edit2 } from 'lucide-react';
+import { useState } from 'react';
 import useStore from '../store/useStore';
+import EditProfileModal from '../components/Modal/EditProfileModal';
 
 export default function Settings() {
   const theme = useStore((s) => s.theme);
   const toggleTheme = useStore((s) => s.toggleTheme);
   const role = useStore((s) => s.role);
+  const profile = useStore((s) => s.profile);
+  const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
 
   return (
     <div className="p-4 lg:p-6 space-y-6 max-w-3xl">
@@ -23,81 +27,129 @@ export default function Settings() {
           borderWidth: '1px',
         }}
       >
-        <Card.Header className="flex flex-row gap-3 px-5 pt-5 pb-0">
-          <div className="w-9 h-9 rounded-xl bg-indigo-500/15 flex items-center justify-center">
-            <User size={18} className="text-indigo-400" />
+        <Card.Header className="flex flex-row gap-3 px-5 pt-5 pb-0 justify-between items-start">
+          <div className="flex flex-row gap-3">
+            <div className="w-9 h-9 rounded-xl bg-indigo-500/15 flex items-center justify-center">
+              <User size={18} className="text-indigo-400" />
+            </div>
+            <div>
+              <Card.Title className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Profile Information</Card.Title>
+              <Card.Description className="text-xs" style={{ color: 'var(--text-muted)' }}>Your personal details</Card.Description>
+            </div>
           </div>
-          <div>
-            <Card.Title className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Profile Information</Card.Title>
-            <Card.Description className="text-xs" style={{ color: 'var(--text-muted)' }}>Update your personal details</Card.Description>
-          </div>
+          <button
+            onClick={() => setIsEditProfileOpen(true)}
+            className="p-2 rounded-lg hover:bg-opacity-10 transition-colors flex items-center gap-2 text-sm font-medium"
+            style={{
+              backgroundColor: 'var(--bg-input)',
+              color: '#6366f1',
+            }}
+          >
+            <Edit2 size={16} />
+            Edit
+          </button>
         </Card.Header>
         <Card.Content className="px-5 py-4 space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
               <label className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>Full Name</label>
-              <input
-                defaultValue="Alex Morgan"
-                className="rounded-xl px-3 py-2 text-sm outline-none transition-all"
+              <div 
+                className="rounded-xl px-3 py-2 text-sm"
                 style={{
                   backgroundColor: 'var(--bg-input)',
                   borderColor: 'var(--border-input)',
                   borderWidth: '1px',
                   color: 'var(--text-primary)',
                 }}
-                onFocus={(e) => e.target.style.borderColor = '#6366f1'}
-                onBlur={(e) => e.target.style.borderColor = 'var(--border-input)'}
-              />
+              >
+                {profile.fullName}
+              </div>
             </div>
             <div className="flex flex-col gap-1.5">
               <label className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>Email</label>
-              <input
-                defaultValue="alex@fintrack.io"
-                type="email"
-                className="rounded-xl px-3 py-2 text-sm outline-none transition-all"
+              <div 
+                className="rounded-xl px-3 py-2 text-sm"
                 style={{
                   backgroundColor: 'var(--bg-input)',
                   borderColor: 'var(--border-input)',
                   borderWidth: '1px',
                   color: 'var(--text-primary)',
                 }}
-                onFocus={(e) => e.target.style.borderColor = '#6366f1'}
-                onBlur={(e) => e.target.style.borderColor = 'var(--border-input)'}
-              />
+              >
+                {profile.email}
+              </div>
             </div>
             <div className="flex flex-col gap-1.5">
               <label className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>Phone</label>
-              <input
-                defaultValue="+1 (555) 123-4567"
-                className="rounded-xl px-3 py-2 text-sm outline-none transition-all"
+              <div 
+                className="rounded-xl px-3 py-2 text-sm"
                 style={{
                   backgroundColor: 'var(--bg-input)',
                   borderColor: 'var(--border-input)',
                   borderWidth: '1px',
                   color: 'var(--text-primary)',
                 }}
-                onFocus={(e) => e.target.style.borderColor = '#6366f1'}
-                onBlur={(e) => e.target.style.borderColor = 'var(--border-input)'}
-              />
+              >
+                {profile.phone}
+              </div>
             </div>
             <div className="flex flex-col gap-1.5">
               <label className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>Currency</label>
-              <select 
-                className="rounded-xl px-3 py-2 text-sm outline-none transition-all"
+              <div 
+                className="rounded-xl px-3 py-2 text-sm"
                 style={{
                   backgroundColor: 'var(--bg-input)',
                   borderColor: 'var(--border-input)',
                   borderWidth: '1px',
                   color: 'var(--text-primary)',
                 }}
-                onFocus={(e) => e.target.style.borderColor = '#6366f1'}
-                onBlur={(e) => e.target.style.borderColor = 'var(--border-input)'}
               >
-                <option value="USD">USD - US Dollar</option>
-                <option value="EUR">EUR - Euro</option>
-                <option value="GBP">GBP - British Pound</option>
-                <option value="JPY">JPY - Japanese Yen</option>
-              </select>
+                {profile.currency}
+              </div>
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>Country</label>
+              <div 
+                className="rounded-xl px-3 py-2 text-sm"
+                style={{
+                  backgroundColor: 'var(--bg-input)',
+                  borderColor: 'var(--border-input)',
+                  borderWidth: '1px',
+                  color: 'var(--text-primary)',
+                }}
+              >
+                {profile.country}
+              </div>
+            </div>
+            {profile.state && (
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>State/Province</label>
+                <div 
+                  className="rounded-xl px-3 py-2 text-sm"
+                  style={{
+                    backgroundColor: 'var(--bg-input)',
+                    borderColor: 'var(--border-input)',
+                    borderWidth: '1px',
+                    color: 'var(--text-primary)',
+                  }}
+                >
+                  {profile.state}
+                </div>
+              </div>
+            )}
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>Dial Code</label>
+              <div 
+                className="rounded-xl px-3 py-2 text-sm"
+                style={{
+                  backgroundColor: 'var(--bg-input)',
+                  borderColor: 'var(--border-input)',
+                  borderWidth: '1px',
+                  color: 'var(--text-primary)',
+                }}
+              >
+                {profile.dialCode}
+              </div>
             </div>
           </div>
         </Card.Content>
@@ -238,6 +290,12 @@ export default function Settings() {
           Save Changes
         </button>
       </div>
+
+      {/* Edit Profile Modal */}
+      <EditProfileModal 
+        isOpen={isEditProfileOpen} 
+        onClose={() => setIsEditProfileOpen(false)}
+      />
     </div>
   );
 }

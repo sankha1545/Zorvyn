@@ -8,7 +8,7 @@ import {
   TrendingUp,
   X,
 } from 'lucide-react';
-import useStore from '../store/useStore';
+import useStore from '../../store/useStore';
 
 const navItems = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },

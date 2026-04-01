@@ -52,6 +52,13 @@ export default function Transactions() {
   const [page, setPage] = useState(1);
   const rowsPerPage = 10;
 
+  // Advanced Filters
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
+  const [minAmount, setMinAmount] = useState('');
+  const [maxAmount, setMaxAmount] = useState('');
+  const [merchantFilter, setMerchantFilter] = useState('');
+
   // Modal states
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -63,6 +70,8 @@ export default function Transactions() {
 
   const filteredTransactions = useMemo(() => {
     let result = [...transactions];
+    
+    // Search filter  
     if (activeSearch) {
       const s = activeSearch.toLowerCase();
       result = result.filter(t =>
@@ -71,10 +80,31 @@ export default function Transactions() {
         t.category.toLowerCase().includes(s)
       );
     }
+    
+    // Type filter
     if (typeFilter !== 'All') result = result.filter(t => t.type === typeFilter);
+    
+    // Category filter
     if (categoryFilter !== 'All') result = result.filter(t => t.category === categoryFilter);
+    
+    // Status filter
     if (statusFilter !== 'All') result = result.filter(t => t.status === statusFilter);
+    
+    // Date range filter
+    if (dateFrom) result = result.filter(t => t.date >= dateFrom);
+    if (dateTo) result = result.filter(t => t.date <= dateTo);
+    
+    // Amount range filter
+    if (minAmount) result = result.filter(t => parseFloat(t.amount) >= parseFloat(minAmount));
+    if (maxAmount) result = result.filter(t => parseFloat(t.amount) <= parseFloat(maxAmount));
+    
+    // Merchant filter
+    if (merchantFilter) {
+      const m = merchantFilter.toLowerCase();
+      result = result.filter(t => t.merchant.toLowerCase().includes(m));
+    }
 
+    // Sorting
     result.sort((a, b) => {
       let cmp = 0;
       if (sortField === 'date') cmp = a.date.localeCompare(b.date);
@@ -83,7 +113,7 @@ export default function Transactions() {
       return sortDirection === 'asc' ? cmp : -cmp;
     });
     return result;
-  }, [transactions, activeSearch, typeFilter, categoryFilter, statusFilter, sortField, sortDirection]);
+  }, [transactions, activeSearch, typeFilter, categoryFilter, statusFilter, dateFrom, dateTo, minAmount, maxAmount, merchantFilter, sortField, sortDirection]);
 
   const totalPages = Math.ceil(filteredTransactions.length / rowsPerPage);
   const paginatedTransactions = filteredTransactions.slice((page - 1) * rowsPerPage, page * rowsPerPage);
@@ -123,8 +153,19 @@ export default function Transactions() {
     setDeletingId(null);
   };
 
-  const clearFilters = () => { setSearch(''); setTypeFilter('All'); setCategoryFilter('All'); setStatusFilter('All'); setPage(1); };
-  const hasActiveFilters = search || typeFilter !== 'All' || categoryFilter !== 'All' || statusFilter !== 'All';
+  const clearFilters = () => { 
+    setSearch(''); 
+    setTypeFilter('All'); 
+    setCategoryFilter('All'); 
+    setStatusFilter('All');
+    setDateFrom('');
+    setDateTo('');
+    setMinAmount('');
+    setMaxAmount('');
+    setMerchantFilter('');
+    setPage(1); 
+  };
+  const hasActiveFilters = search || typeFilter !== 'All' || categoryFilter !== 'All' || statusFilter !== 'All' || dateFrom || dateTo || minAmount || maxAmount || merchantFilter;
 
   const handleExportCSV = () => {
     const dataToExport = filteredTransactions.map(tx => ({
@@ -205,6 +246,98 @@ export default function Transactions() {
           statusOptions={statusOptions}
           hasActiveFilters={hasActiveFilters}
         />
+        
+        {/* Advanced Filters */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 p-3 rounded-lg" style={{ backgroundColor: 'var(--bg-surface)' }}>
+          <div>
+            <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-muted)' }}>Date From</label>
+            <input
+              type="date"
+              value={dateFrom}
+              onChange={(e) => {
+                setDateFrom(e.target.value);
+                setPage(1);
+              }}
+              className="w-full px-2 py-1.5 rounded border text-sm"
+              style={{
+                backgroundColor: 'var(--bg-input)',
+                borderColor: 'var(--border-color)',
+                color: 'var(--text-primary)'
+              }}
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-muted)' }}>Date To</label>
+            <input
+              type="date"
+              value={dateTo}
+              onChange={(e) => {
+                setDateTo(e.target.value);
+                setPage(1);
+              }}
+              className="w-full px-2 py-1.5 rounded border text-sm"
+              style={{
+                backgroundColor: 'var(--bg-input)',
+                borderColor: 'var(--border-color)',
+                color: 'var(--text-primary)'
+              }}
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-muted)' }}>Min Amount</label>
+            <input
+              type="number"
+              placeholder="0"
+              value={minAmount}
+              onChange={(e) => {
+                setMinAmount(e.target.value);
+                setPage(1);
+              }}
+              className="w-full px-2 py-1.5 rounded border text-sm"
+              style={{
+                backgroundColor: 'var(--bg-input)',
+                borderColor: 'var(--border-color)',
+                color: 'var(--text-primary)'
+              }}
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-muted)' }}>Max Amount</label>
+            <input
+              type="number"
+              placeholder="∞"
+              value={maxAmount}
+              onChange={(e) => {
+                setMaxAmount(e.target.value);
+                setPage(1);
+              }}
+              className="w-full px-2 py-1.5 rounded border text-sm"
+              style={{
+                backgroundColor: 'var(--bg-input)',
+                borderColor: 'var(--border-color)',
+                color: 'var(--text-primary)'
+              }}
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium mb-1" style={{ color: 'var(--text-muted)' }}>Merchant</label>
+            <input
+              type="text"
+              placeholder="Search..."
+              value={merchantFilter}
+              onChange={(e) => {
+                setMerchantFilter(e.target.value);
+                setPage(1);
+              }}
+              className="w-full px-2 py-1.5 rounded border text-sm"
+              style={{
+                backgroundColor: 'var(--bg-input)',
+                borderColor: 'var(--border-color)',
+                color: 'var(--text-primary)'
+              }}
+            />
+          </div>
+        </div>
       </div>
 
       {/* Table */}

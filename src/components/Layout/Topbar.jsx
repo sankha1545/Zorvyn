@@ -4,7 +4,6 @@ import {
   Avatar,
 } from '@heroui/react';
 import {
-  Search,
   Menu,
   Shield,
   Eye,
@@ -14,18 +13,30 @@ import {
   User,
   ChevronDown,
   Settings,
-  X,
 } from 'lucide-react';
-import useStore from '../store/useStore';
+import { useState } from 'react';
+import useStore from '../../store/useStore';
+import NotificationsModal from '../Modal/NotificationsModal';
 
 export default function Topbar() {
   const role = useStore((s) => s.role);
   const setRole = useStore((s) => s.setRole);
   const theme = useStore((s) => s.theme);
   const toggleTheme = useStore((s) => s.toggleTheme);
-  const globalSearch = useStore((s) => s.globalSearch);
-  const setGlobalSearch = useStore((s) => s.setGlobalSearch);
   const setMobileSidebarOpen = useStore((s) => s.setMobileSidebarOpen);
+  const setActivePage = useStore((s) => s.setActivePage);
+  const notifications = useStore((s) => s.notifications);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  
+  const unreadCount = notifications.filter(n => !n.read).length;
+
+  const handleNavigateToSettings = () => {
+    setActivePage('settings');
+  };
+
+  const handleNavigateToProfile = () => {
+    setActivePage('settings');
+  };
 
   return (
     <header 
@@ -37,7 +48,7 @@ export default function Topbar() {
       }}
     >
       <div className="flex items-center justify-between h-16 px-4 lg:px-6">
-        {/* Left: Mobile menu + Search */}
+        {/* Left: Mobile menu */}
         <div className="flex items-center gap-3 flex-1">
           <button
             className="lg:hidden p-1.5 rounded-lg transition-all cursor-pointer"
@@ -50,47 +61,6 @@ export default function Topbar() {
           >
             <Menu size={20} />
           </button>
-
-          <div className="hidden sm:block w-full max-w-xs relative">
-            <div className="relative">
-              <Search 
-                size={15} 
-                className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"
-                style={{ color: 'var(--text-muted)' }}
-              />
-              <input
-                type="text"
-                placeholder="Search transactions..."
-                value={globalSearch}
-                onChange={(e) => setGlobalSearch(e.target.value)}
-                style={{
-                  backgroundColor: 'var(--bg-input)',
-                  borderColor: 'var(--border-input)',
-                  color: 'var(--text-primary)',
-                }}
-                className="w-full rounded-xl pl-9 pr-8 py-2 text-sm outline-none transition-all"
-                onFocus={(e) => {
-                  e.target.style.backgroundColor = 'var(--bg-surface)';
-                  e.target.style.borderColor = '#6366f1';
-                }}
-                onBlur={(e) => {
-                  e.target.style.backgroundColor = 'var(--bg-input)';
-                  e.target.style.borderColor = 'var(--border-input)';
-                }}
-              />
-              {globalSearch && (
-                <button
-                  onClick={() => setGlobalSearch('')}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 cursor-pointer transition-all"
-                  style={{ color: 'var(--text-muted)' }}
-                  onMouseEnter={(e) => e.target.style.color = 'var(--text-primary)'}
-                  onMouseLeave={(e) => e.target.style.color = 'var(--text-muted)'}
-                >
-                  <X size={14} />
-                </button>
-              )}
-            </div>
-          </div>
         </div>
 
         {/* Right: Role Switcher + Theme + Profile */}
@@ -182,6 +152,7 @@ export default function Topbar() {
 
           {/* Notifications */}
           <button 
+            onClick={() => setIsNotificationsOpen(true)}
             className="p-2 rounded-xl transition-all relative cursor-pointer"
             style={{
               color: 'var(--text-secondary)',
@@ -197,7 +168,9 @@ export default function Topbar() {
             }}
           >
             <Bell size={18} />
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-indigo-500 rounded-full ring-2" style={{ ringColor: 'var(--bg-page)' }} />
+            {unreadCount > 0 && (
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-indigo-500 rounded-full ring-2" style={{ ringColor: 'var(--bg-page)' }} />
+            )}
           </button>
 
           {/* User Profile */}
@@ -231,6 +204,7 @@ export default function Topbar() {
                   style={{
                     color: 'var(--text-secondary)',
                   }}
+                  onAction={handleNavigateToProfile}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.backgroundColor = 'var(--bg-surface-hover)';
                     e.currentTarget.style.color = 'var(--text-primary)';
@@ -250,6 +224,7 @@ export default function Topbar() {
                   style={{
                     color: 'var(--text-secondary)',
                   }}
+                  onAction={handleNavigateToSettings}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.backgroundColor = 'var(--bg-surface-hover)';
                     e.currentTarget.style.color = 'var(--text-primary)';
@@ -267,6 +242,12 @@ export default function Topbar() {
           </Dropdown>
         </div>
       </div>
+
+      {/* Notifications Modal */}
+      <NotificationsModal 
+        isOpen={isNotificationsOpen} 
+        onClose={() => setIsNotificationsOpen(false)}
+      />
     </header>
   );
 }

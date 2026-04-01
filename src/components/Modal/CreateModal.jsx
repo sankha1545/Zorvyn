@@ -94,14 +94,15 @@ export default function CreateModal({
                           borderColor: 'var(--border-input)',
                           borderWidth: '1px',
                           color: 'var(--text-primary)',
+                          fontWeight: '500',
                         }}
                         onFocus={(e) => (e.target.style.borderColor = '#6366f1')}
                         onBlur={(e) =>
                           (e.target.style.borderColor = 'var(--border-input)')
                         }
                       >
-                        <option value="Income">Income</option>
-                        <option value="Expense">Expense</option>
+                        <option value="Income" style={{ backgroundColor: 'var(--bg-surface)', color: 'var(--text-primary)', padding: '8px' }}>Income</option>
+                        <option value="Expense" style={{ backgroundColor: 'var(--bg-surface)', color: 'var(--text-primary)', padding: '8px' }}>Expense</option>
                       </select>
                     </div>
 
@@ -233,15 +234,16 @@ export default function CreateModal({
                           borderColor: 'var(--border-input)',
                           borderWidth: '1px',
                           color: 'var(--text-primary)',
+                          fontWeight: '500',
                         }}
                         onFocus={(e) => (e.target.style.borderColor = '#6366f1')}
                         onBlur={(e) =>
                           (e.target.style.borderColor = 'var(--border-input)')
                         }
                       >
-                        <option value="">Select category...</option>
+                        <option value="" style={{ backgroundColor: 'var(--bg-surface)', color: 'var(--text-primary)', padding: '8px' }}>Select category...</option>
                         {categories.map((cat) => (
-                          <option key={cat} value={cat}>
+                          <option key={cat} value={cat} style={{ backgroundColor: 'var(--bg-surface)', color: 'var(--text-primary)', padding: '8px' }}>
                             {cat}
                           </option>
                         ))}
@@ -270,14 +272,15 @@ export default function CreateModal({
                           borderColor: 'var(--border-input)',
                           borderWidth: '1px',
                           color: 'var(--text-primary)',
+                          fontWeight: '500',
                         }}
                         onFocus={(e) => (e.target.style.borderColor = '#6366f1')}
                         onBlur={(e) =>
                           (e.target.style.borderColor = 'var(--border-input)')
                         }
                       >
-                        <option value="Completed">Completed</option>
-                        <option value="Pending">Pending</option>
+                        <option value="Completed" style={{ backgroundColor: 'var(--bg-surface)', color: 'var(--text-primary)', padding: '8px' }}>Completed</option>
+                        <option value="Pending" style={{ backgroundColor: 'var(--bg-surface)', color: 'var(--text-primary)', padding: '8px' }}>Pending</option>
                       </select>
                     </div>
                   </div>

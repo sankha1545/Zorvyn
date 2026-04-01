@@ -7,7 +7,7 @@ import {
   Wallet, TrendingUp, TrendingDown, ArrowUpRight,
   ShoppingBag, BarChart3, Store,
 } from 'lucide-react';
-import { StatCard, ChartContainer, SkeletonLoader } from '../components/Dashboard';
+import { StatCard, ChartContainer } from '../components/Dashboard';
 import { StatCardSkeleton, ChartSkeleton } from '../components/Dashboard/SkeletonLoader';
 import useStore from '../store/useStore';
 import {

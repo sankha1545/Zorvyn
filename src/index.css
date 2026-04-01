@@ -69,6 +69,73 @@ html.light {
   opacity: 0.5;
 }
 
+/* Select/Dropdown Styling with Theme Support */
+select,
+select > option {
+  accent-color: #6366f1;
+}
+
+/* Dark mode select styling */
+:root select {
+  background-color: var(--bg-input);
+  color: var(--text-primary);
+  border-color: var(--border-input);
+}
+
+:root select:hover {
+  background-color: var(--bg-surface-hover);
+}
+
+:root select:focus {
+  border-color: #6366f1;
+  outline: none;
+}
+
+/* Light mode select styling */
+html.light select {
+  background-color: var(--bg-input);
+  color: var(--text-primary);
+  border-color: var(--border-input);
+}
+
+html.light select:hover {
+  background-color: var(--bg-surface-hover);
+}
+
+html.light select:focus {
+  border-color: #6366f1;
+  outline: none;
+}
+
+/* Option styling for better visibility */
+select option {
+  padding: 8px;
+  font-size: 14px;
+}
+
+:root select option {
+  background-color: var(--bg-surface);
+  color: var(--text-primary);
+}
+
+html.light select option {
+  background-color: var(--bg-surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border-input);
+}
+
+/* Selected option styling */
+select option:checked {
+  background: linear-gradient(#6366f1, #6366f1);
+  background-color: #6366f1 !important;
+  color: white !important;
+}
+
+select option:focus {
+  background-color: var(--bg-surface);
+  color: var(--text-primary);
+}
+
 /* Body styling */
 body {
   background-color: var(--bg-page);
