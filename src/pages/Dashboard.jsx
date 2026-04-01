@@ -7,9 +7,8 @@ import {
   Wallet, TrendingUp, TrendingDown, ArrowUpRight,
   ShoppingBag, BarChart3, Store,
 } from 'lucide-react';
-import StatCard from '../components/StatCard';
-import ChartContainer from '../components/ChartContainer';
-import { StatCardSkeleton, ChartSkeleton } from '../components/SkeletonLoader';
+import { StatCard, ChartContainer, SkeletonLoader } from '../components/Dashboard';
+import { StatCardSkeleton, ChartSkeleton } from '../components/Dashboard/SkeletonLoader';
 import useStore from '../store/useStore';
 import {
   balanceTrend,
@@ -26,9 +25,15 @@ const formatCurrencyFull = (value) =>
 const CustomAreaTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-zinc-900 border border-white/[0.08] rounded-xl px-3 py-2 shadow-xl">
-        <p className="text-xs text-zinc-500 mb-1">{label}</p>
-        <p className="text-sm font-bold text-zinc-100">{formatCurrencyFull(payload[0].value)}</p>
+      <div 
+        className="border rounded-xl px-3 py-2 shadow-xl"
+        style={{
+          backgroundColor: 'var(--bg-surface)',
+          borderColor: 'var(--border-input)',
+        }}
+      >
+        <p className="text-xs mb-1" style={{ color: 'var(--text-muted)' }}>{label}</p>
+        <p className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>{formatCurrencyFull(payload[0].value)}</p>
       </div>
     );
   }
@@ -38,8 +43,14 @@ const CustomAreaTooltip = ({ active, payload, label }) => {
 const CustomPieTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-zinc-900 border border-white/[0.08] rounded-xl px-3 py-2 shadow-xl">
-        <p className="text-xs font-medium text-zinc-200">{payload[0].name}</p>
+      <div 
+        className="border rounded-xl px-3 py-2 shadow-xl"
+        style={{
+          backgroundColor: 'var(--bg-surface)',
+          borderColor: 'var(--border-input)',
+        }}
+      >
+        <p className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>{payload[0].name}</p>
         <p className="text-sm font-bold text-indigo-400">{formatCurrencyFull(payload[0].value)}</p>
       </div>
     );
@@ -76,8 +87,8 @@ export default function Dashboard() {
     <div className="p-4 lg:p-6 space-y-6">
       {/* Page header */}
       <div>
-        <h2 className="text-xl font-bold text-zinc-100">Dashboard</h2>
-        <p className="text-sm text-zinc-500 mt-0.5">Your financial overview for March 2026</p>
+        <h2 className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>Dashboard</h2>
+        <p className="text-sm mt-0.5" style={{ color: 'var(--text-muted)' }}>Your financial overview for March 2026</p>
       </div>
 
       {/* Summary Cards */}
@@ -131,18 +142,18 @@ export default function Dashboard() {
                 <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(113,113,122,0.12)" />
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--border-subtle)" />
             <XAxis
               dataKey="date"
               axisLine={false}
               tickLine={false}
-              tick={{ fill: '#52525b', fontSize: 11 }}
+              tick={{ fill: 'var(--text-muted)', fontSize: 11 }}
               interval="preserveStartEnd"
             />
             <YAxis
               axisLine={false}
               tickLine={false}
-              tick={{ fill: '#52525b', fontSize: 11 }}
+              tick={{ fill: 'var(--text-muted)', fontSize: 11 }}
               tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
               width={50}
             />
@@ -186,7 +197,7 @@ export default function Dashboard() {
               iconType="circle"
               iconSize={8}
               formatter={(value) => (
-                <span className="text-[11px] text-zinc-500">{value}</span>
+                <span className="text-[11px]" style={{ color: 'var(--text-muted)' }}>{value}</span>
               )}
             />
           </PieChart>
@@ -195,7 +206,12 @@ export default function Dashboard() {
 
       {/* Insights Row */}
       <div>
-        <h3 className="text-sm font-semibold text-zinc-200 mb-3">Quick Insights</h3>
+        <h3 
+          className="text-sm font-semibold mb-3"
+          style={{ color: 'var(--text-secondary)' }}
+        >
+          Quick Insights
+        </h3>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <StatCard
             title="Highest Spending"

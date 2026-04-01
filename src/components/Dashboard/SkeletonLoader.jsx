@@ -2,7 +2,13 @@ import { Card, Skeleton } from '@heroui/react';
 
 export function StatCardSkeleton() {
   return (
-    <Card className="border border-white/[0.06] bg-zinc-900/80">
+    <Card 
+      style={{
+        backgroundColor: 'var(--bg-surface)',
+        borderColor: 'var(--border-subtle)',
+        borderWidth: '1px',
+      }}
+    >
       <Card.Content className="p-5 flex flex-col gap-3">
         <div className="flex items-center justify-between">
           <div className="flex-1 space-y-2">
@@ -19,7 +25,13 @@ export function StatCardSkeleton() {
 
 export function ChartSkeleton() {
   return (
-    <Card className="border border-white/[0.06] bg-zinc-900/80">
+    <Card 
+      style={{
+        backgroundColor: 'var(--bg-surface)',
+        borderColor: 'var(--border-subtle)',
+        borderWidth: '1px',
+      }}
+    >
       <Card.Content className="p-5">
         <Skeleton className="w-40 h-5 rounded-lg mb-1" />
         <Skeleton className="w-28 h-3 rounded-lg mb-4" />
@@ -31,7 +43,13 @@ export function ChartSkeleton() {
 
 export function TableSkeleton() {
   return (
-    <Card className="border border-white/[0.06] bg-zinc-900/80">
+    <Card 
+      style={{
+        backgroundColor: 'var(--bg-surface)',
+        borderColor: 'var(--border-subtle)',
+        borderWidth: '1px',
+      }}
+    >
       <Card.Content className="p-5 space-y-3">
         <div className="flex gap-3 mb-4">
           <Skeleton className="flex-1 h-10 rounded-lg" />

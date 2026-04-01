@@ -30,16 +30,22 @@ export default function Sidebar() {
   };
 
   const sidebarContent = (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full" style={{ backgroundColor: 'var(--bg-sidebar)' }}>
       {/* Logo */}
-      <div className={`flex items-center gap-3 px-4 py-5 border-b border-white/[0.06] ${!sidebarOpen ? 'justify-center' : ''}`}>
+      <div 
+        className={`flex items-center gap-3 px-4 py-5 ${!sidebarOpen ? 'justify-center' : ''}`}
+        style={{ 
+          borderColor: 'var(--border-subtle)',
+          borderBottomWidth: '1px',
+        }}
+      >
         <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-indigo-500/25">
           <TrendingUp size={18} className="text-white" />
         </div>
         {sidebarOpen && (
           <div className="overflow-hidden">
-            <h1 className="text-base font-bold text-zinc-100 tracking-tight">FinTrack</h1>
-            <p className="text-[10px] text-zinc-500 font-medium">Finance Dashboard</p>
+            <h1 className="text-base font-bold tracking-tight" style={{ color: 'var(--text-primary)' }}>FinTrack</h1>
+            <p className="text-[10px] font-medium" style={{ color: 'var(--text-muted)' }}>Finance Dashboard</p>
           </div>
         )}
       </div>
@@ -59,10 +65,25 @@ export default function Sidebar() {
                 transition-all duration-200 outline-none cursor-pointer
                 ${isActive
                   ? 'bg-indigo-500/15 text-indigo-400 shadow-sm'
-                  : 'text-zinc-500 hover:bg-white/[0.04] hover:text-zinc-300'
+                  : ''
                 }
                 ${!sidebarOpen ? 'justify-center' : ''}
               `}
+              style={!isActive ? {
+                color: 'var(--text-muted)',
+              } : {}}
+              onMouseEnter={(e) => {
+                if (!isActive) {
+                  e.currentTarget.style.backgroundColor = 'var(--bg-surface-hover)';
+                  e.currentTarget.style.color = 'var(--text-secondary)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!isActive) {
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                  e.currentTarget.style.color = 'var(--text-muted)';
+                }
+              }}
             >
               <Icon size={18} strokeWidth={isActive ? 2.5 : 2} />
               {sidebarOpen && <span>{item.label}</span>}
@@ -73,7 +94,15 @@ export default function Sidebar() {
             return (
               <Tooltip key={item.id}>
                 <Tooltip.Trigger>{buttonEl}</Tooltip.Trigger>
-                <Tooltip.Content className="bg-zinc-800 text-zinc-200 text-xs px-2 py-1 rounded-lg border border-white/[0.06]">
+                <Tooltip.Content 
+                  className="text-xs px-2 py-1 rounded-lg"
+                  style={{
+                    backgroundColor: 'var(--bg-surface)',
+                    color: 'var(--text-primary)',
+                    borderColor: 'var(--border-subtle)',
+                    borderWidth: '1px',
+                  }}
+                >
                   {item.label}
                 </Tooltip.Content>
               </Tooltip>
@@ -88,7 +117,18 @@ export default function Sidebar() {
       <div className="hidden lg:block px-3 pb-4">
         <button
           onClick={toggleSidebar}
-          className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-zinc-500 hover:bg-white/[0.04] hover:text-zinc-300 transition-all cursor-pointer"
+          className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-medium transition-all cursor-pointer"
+          style={{
+            color: 'var(--text-muted)',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = 'var(--bg-surface-hover)';
+            e.currentTarget.style.color = 'var(--text-secondary)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = 'transparent';
+            e.currentTarget.style.color = 'var(--text-muted)';
+          }}
         >
           {sidebarOpen ? (
             <>
@@ -108,7 +148,8 @@ export default function Sidebar() {
       {/* Mobile overlay */}
       {mobileSidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/60 z-40 lg:hidden backdrop-blur-sm"
+          className="fixed inset-0 z-40 lg:hidden backdrop-blur-sm"
+          style={{ backgroundColor: 'rgba(0, 0, 0, 0.6)' }}
           onClick={() => setMobileSidebarOpen(false)}
         />
       )}
@@ -117,14 +158,30 @@ export default function Sidebar() {
       <aside
         className={`
           fixed top-0 left-0 h-full z-50 lg:hidden
-          w-64 bg-zinc-950 border-r border-white/[0.06]
+          w-64 border-r
           transform transition-transform duration-300 ease-in-out
           ${mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
         `}
+        style={{ 
+          backgroundColor: 'var(--bg-sidebar)',
+          borderColor: 'var(--border-subtle)',
+        }}
       >
         <button
           onClick={() => setMobileSidebarOpen(false)}
-          className="absolute top-4 right-4 p-1 rounded-lg hover:bg-white/[0.04] text-zinc-500 cursor-pointer"
+          className="absolute top-4 right-4 p-1 rounded-lg cursor-pointer"
+          style={{ 
+            color: 'var(--text-muted)',
+            backgroundColor: 'transparent',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = 'var(--bg-surface-hover)';
+            e.currentTarget.style.color = 'var(--text-secondary)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = 'transparent';
+            e.currentTarget.style.color = 'var(--text-muted)';
+          }}
         >
           <X size={18} />
         </button>
@@ -135,10 +192,14 @@ export default function Sidebar() {
       <aside
         className={`
           hidden lg:flex flex-col flex-shrink-0
-          h-screen bg-zinc-950 border-r border-white/[0.06]
-          transition-all duration-300 ease-in-out sticky top-0
+          h-screen border-r sticky top-0
+          transition-all duration-300 ease-in-out
           ${sidebarOpen ? 'w-56' : 'w-[68px]'}
         `}
+        style={{ 
+          backgroundColor: 'var(--bg-sidebar)',
+          borderColor: 'var(--border-subtle)',
+        }}
       >
         {sidebarContent}
       </aside>

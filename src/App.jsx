@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import Layout from './components/Layout';
+import { Layout } from './components/Layout';
 import Dashboard from './pages/Dashboard';
 import Transactions from './pages/Transactions';
 import Settings from './pages/Settings';
@@ -22,6 +22,12 @@ function AppContent() {
 
 export default function App() {
   const setIsLoading = useStore((s) => s.setIsLoading);
+  const initTheme = useStore((s) => s.initTheme);
+
+  // Initialize theme on mount
+  useEffect(() => {
+    initTheme();
+  }, [initTheme]);
 
   // Simulate initial data loading
   useEffect(() => {

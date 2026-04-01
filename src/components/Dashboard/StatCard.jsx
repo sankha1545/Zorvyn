@@ -10,14 +10,27 @@ export default function StatCard({ title, value, icon: Icon, trend, trendLabel, 
   };
 
   return (
-    <Card className={`stat-card-hover border border-white/[0.06] bg-zinc-900/80 ${className}`}>
+    <Card 
+      className={`stat-card-hover ${className}`}
+      style={{
+        backgroundColor: 'var(--bg-surface)',
+        borderColor: 'var(--border-subtle)',
+        borderWidth: '1px',
+      }}
+    >
       <Card.Content className="p-5 flex flex-col gap-3">
         <div className="flex items-center justify-between">
           <div className="flex-1 min-w-0">
-            <p className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-1.5">
+            <p 
+              className="text-[11px] font-semibold uppercase tracking-wider mb-1.5"
+              style={{ color: 'var(--text-muted)' }}
+            >
               {title}
             </p>
-            <p className="text-2xl font-bold text-zinc-100 tracking-tight">
+            <p 
+              className="text-2xl font-bold tracking-tight"
+              style={{ color: 'var(--text-primary)' }}
+            >
               {value}
             </p>
           </div>
@@ -37,7 +50,12 @@ export default function StatCard({ title, value, icon: Icon, trend, trendLabel, 
               {trend >= 0 ? '+' : ''}{trend}%
             </span>
             {trendLabel && (
-              <span className="text-[11px] text-zinc-500">{trendLabel}</span>
+              <span 
+                className="text-[11px]"
+                style={{ color: 'var(--text-muted)' }}
+              >
+                {trendLabel}
+              </span>
             )}
           </div>
         )}

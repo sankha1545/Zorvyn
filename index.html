@@ -5,8 +5,31 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>FinTrack - Finance Dashboard</title>
+    <script>
+      // Detect system theme on initial load
+      (function() {
+        const saved = localStorage.getItem('fintrack-theme');
+        if (saved) {
+          const html = document.documentElement;
+          if (saved === 'light') {
+            html.classList.add('light');
+            html.classList.remove('dark');
+          } else {
+            html.classList.remove('light');
+            html.classList.add('dark');
+          }
+        } else {
+          // Use system preference
+          if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+            const html = document.documentElement;
+            html.classList.add('light');
+            html.classList.remove('dark');
+          }
+        }
+      })();
+    </script>
   </head>
-  <body class="min-h-screen bg-background text-foreground">
+  <body class="min-h-screen text-foreground">
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

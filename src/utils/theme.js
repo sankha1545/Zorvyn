@@ -1,26 +1,28 @@
-// Theme-aware class utilities
-// These provide dark/light variants for common patterns
+// Theme-aware class utilities using CSS variables
+// Supports both dark and light modes
 
 export const theme = {
-  // Backgrounds
+  // Backgrounds using CSS variables
   bg: {
-    page: 'bg-zinc-950 dark:bg-zinc-950 light:bg-gray-50',
-    surface: 'bg-zinc-900/80 dark:bg-zinc-900/80',
-    surfaceHover: 'hover:bg-white/[0.04] dark:hover:bg-white/[0.04]',
-    input: 'bg-white/[0.04] dark:bg-white/[0.04]',
-    sidebar: 'bg-zinc-950 dark:bg-zinc-950',
-    topbar: 'bg-zinc-950/80 dark:bg-zinc-950/80',
+    page: '[background-color:var(--bg-page)]',
+    surface: '[background-color:var(--bg-surface)]',
+    surfaceHover: 'hover:[background-color:var(--bg-surface-hover)]',
+    surfaceHoverBg: '[background-color:var(--bg-surface-hover)]',
+    input: '[background-color:var(--bg-input)]',
+    sidebar: '[background-color:var(--bg-sidebar)]',
+    topbar: '[background-color:var(--bg-topbar)]',
   },
-  // Text
+  // Text colors using CSS variables
   text: {
-    primary: 'text-zinc-100 dark:text-zinc-100',
-    secondary: 'text-zinc-400 dark:text-zinc-400',
-    muted: 'text-zinc-500 dark:text-zinc-500',
-    dimmed: 'text-zinc-600 dark:text-zinc-600',
+    primary: '[color:var(--text-primary)]',
+    secondary: '[color:var(--text-secondary)]',
+    muted: '[color:var(--text-muted)]',
+    dimmed: '[color:var(--text-dimmed)]',
+    inverse: '[color:var(--text-inverse)]',
   },
-  // Borders
+  // Borders using CSS variables
   border: {
-    subtle: 'border-white/[0.06] dark:border-white/[0.06]',
-    input: 'border-white/[0.08] dark:border-white/[0.08]',
+    subtle: '[border-color:var(--border-subtle)]',
+    input: '[border-color:var(--border-input)]',
   },
 };
