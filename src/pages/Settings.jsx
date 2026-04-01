@@ -37,17 +37,19 @@ export default function Settings() {
               <Card.Description className="text-xs" style={{ color: 'var(--text-muted)' }}>Your personal details</Card.Description>
             </div>
           </div>
-          <button
-            onClick={() => setIsEditProfileOpen(true)}
-            className="p-2 rounded-lg hover:bg-opacity-10 transition-colors flex items-center gap-2 text-sm font-medium"
-            style={{
-              backgroundColor: 'var(--bg-input)',
-              color: '#6366f1',
-            }}
-          >
-            <Edit2 size={16} />
-            Edit
-          </button>
+          {role === 'admin' && (
+            <button
+              onClick={() => setIsEditProfileOpen(true)}
+              className="p-2 rounded-lg hover:bg-opacity-10 transition-colors flex items-center gap-2 text-sm font-medium"
+              style={{
+                backgroundColor: 'var(--bg-input)',
+                color: '#6366f1',
+              }}
+            >
+              <Edit2 size={16} />
+              Edit
+            </button>
+          )}
         </Card.Header>
         <Card.Content className="px-5 py-4 space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

@@ -1,8 +1,9 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Tooltip } from '@heroui/react';
 import { Plus, Download } from 'lucide-react';
 import useStore from '../store/useStore';
 import RoleGuard from '../components/RoleGuard';
+import Toast from '../components/Toast';
 import CreateModal from '../components/Modal/CreateModal';
 import EditModal from '../components/Modal/EditModal';
 import DeleteModal from '../components/Modal/DeleteModal';
@@ -42,6 +43,7 @@ export default function Transactions() {
   const updateTransaction = useStore((s) => s.updateTransaction);
   const deleteTransaction = useStore((s) => s.deleteTransaction);
   const globalSearch = useStore((s) => s.globalSearch);
+  const role = useStore((s) => s.role);
 
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState('All');
@@ -65,6 +67,16 @@ export default function Transactions() {
   const [formData, setFormData] = useState(emptyForm);
   const [editingId, setEditingId] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
+
+  // Toast state
+  const [toast, setToast] = useState(null);
+
+  // Show viewer mode toast on role change
+  useEffect(() => {
+    if (role === 'viewer') {
+      setToast({ message: '👁️ You are in View-Only mode. Export only.', type: 'info' });
+    }
+  }, [role]);
 
   const activeSearch = globalSearch || search;
 
@@ -139,8 +151,13 @@ export default function Transactions() {
 
   const handleSubmit = () => {
     const data = { ...formData, amount: parseFloat(formData.amount) || 0 };
-    if (editingId) updateTransaction(editingId, data);
-    else addTransaction(data);
+    if (editingId) {
+      updateTransaction(editingId, data);
+      setToast({ message: '✏️ Transaction updated successfully', type: 'success' });
+    } else {
+      addTransaction(data);
+      setToast({ message: '✅ Transaction added successfully', type: 'success' });
+    }
     setIsModalOpen(false);
     setFormData(emptyForm);
     setEditingId(null);
@@ -149,6 +166,7 @@ export default function Transactions() {
   const handleDeleteConfirm = (id) => { setDeletingId(id); setIsDeleteModalOpen(true); };
   const handleDelete = () => {
     if (deletingId) deleteTransaction(deletingId);
+    setToast({ message: '🗑️ Transaction deleted successfully', type: 'delete' });
     setIsDeleteModalOpen(false);
     setDeletingId(null);
   };
@@ -180,6 +198,7 @@ export default function Transactions() {
 
     const timestamp = new Date().toISOString().split('T')[0];
     exportToCSV(dataToExport, `transactions_${timestamp}.csv`);
+    setToast({ message: '📥 CSV exported successfully', type: 'export' });
   };
 
   return (
@@ -351,6 +370,7 @@ export default function Transactions() {
         formatCurrency={formatCurrency}
         formatDate={formatDate}
         showEmptyState={paginatedTransactions.length === 0}
+        role={role}
       />
 
       {/* Pagination */}
@@ -378,6 +398,17 @@ export default function Transactions() {
         onOpenChange={setIsDeleteModalOpen}
         onConfirm={handleDelete}
       />
+
+      {/* Toast Notification */}
+      {toast && (
+        <div className="fixed top-4 left-4 z-50">
+          <Toast
+            message={toast.message}
+            type={toast.type}
+            onClose={() => setToast(null)}
+          />
+        </div>
+      )}
     </div>
   );
 }

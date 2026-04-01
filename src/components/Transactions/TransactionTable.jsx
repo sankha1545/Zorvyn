@@ -12,6 +12,7 @@ export default function TransactionTable({
   formatCurrency,
   formatDate,
   showEmptyState = false,
+  role = 'admin',
 }) {
   const renderSortIcon = (field) => {
     if (sortField !== field) {
@@ -75,7 +76,7 @@ export default function TransactionTable({
             </TableHead>
             <TableHead>Type</TableHead>
             <TableHead>Status</TableHead>
-            <TableHead>Actions</TableHead>
+            {role === 'admin' && <TableHead>Actions</TableHead>}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -118,44 +119,46 @@ export default function TransactionTable({
                   {tx.status}
                 </Badge>
               </TableCell>
-              <TableCell>
-                <div className="flex items-center gap-2">
-                  <Tooltip content="Edit" color="foreground">
-                    <button
-                      onClick={() => onEdit(tx)}
-                      className="p-1.5 rounded-lg transition-all"
-                      style={{ color: 'var(--text-secondary)' }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.color = '#6366f1';
-                        e.currentTarget.style.backgroundColor = 'rgba(99, 102, 241, 0.1)';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.color = 'var(--text-secondary)';
-                        e.currentTarget.style.backgroundColor = 'transparent';
-                      }}
-                    >
-                      <Pencil size={16} />
-                    </button>
-                  </Tooltip>
-                  <Tooltip content="Delete" color="foreground">
-                    <button
-                      onClick={() => onDelete(tx.id)}
-                      className="p-1.5 rounded-lg transition-all"
-                      style={{ color: 'var(--text-secondary)' }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.color = '#f43f5e';
-                        e.currentTarget.style.backgroundColor = 'rgba(244, 63, 94, 0.1)';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.color = 'var(--text-secondary)';
-                        e.currentTarget.style.backgroundColor = 'transparent';
-                      }}
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </Tooltip>
-                </div>
-              </TableCell>
+              {role === 'admin' && (
+                <TableCell>
+                  <div className="flex items-center gap-2">
+                    <Tooltip content="Edit" color="foreground">
+                      <button
+                        onClick={() => onEdit(tx)}
+                        className="p-1.5 rounded-lg transition-all"
+                        style={{ color: 'var(--text-secondary)' }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.color = '#6366f1';
+                          e.currentTarget.style.backgroundColor = 'rgba(99, 102, 241, 0.1)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.color = 'var(--text-secondary)';
+                          e.currentTarget.style.backgroundColor = 'transparent';
+                        }}
+                      >
+                        <Pencil size={16} />
+                      </button>
+                    </Tooltip>
+                    <Tooltip content="Delete" color="foreground">
+                      <button
+                        onClick={() => onDelete(tx.id)}
+                        className="p-1.5 rounded-lg transition-all"
+                        style={{ color: 'var(--text-secondary)' }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.color = '#f43f5e';
+                          e.currentTarget.style.backgroundColor = 'rgba(244, 63, 94, 0.1)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.color = 'var(--text-secondary)';
+                          e.currentTarget.style.backgroundColor = 'transparent';
+                        }}
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </Tooltip>
+                  </div>
+                </TableCell>
+              )}
             </TableRow>
           ))}
         </TableBody>

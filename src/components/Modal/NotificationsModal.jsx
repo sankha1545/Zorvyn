@@ -58,13 +58,16 @@ export default function NotificationsModal({ isOpen, onClose }) {
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-start sm:items-center justify-center pt-20 sm:pt-0 px-4 sm:px-0 overflow-y-auto"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto"
       style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
       onClick={onClose}
     >
       <div 
-        className="w-full max-w-sm sm:max-w-md rounded-2xl shadow-2xl my-auto max-h-[calc(100vh-120px)] sm:max-h-[calc(100vh-100px)] flex flex-col"
-        style={{ backgroundColor: 'var(--bg-surface)' }}
+        className="w-full max-w-sm rounded-2xl shadow-2xl flex flex-col"
+        style={{ 
+          backgroundColor: 'var(--bg-surface)',
+          maxHeight: '90vh',
+        }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -90,7 +93,7 @@ export default function NotificationsModal({ isOpen, onClose }) {
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto min-h-[200px] sm:min-h-[300px]">
+        <div className="flex-1 overflow-y-auto">
           {notifications.length === 0 ? (
             <div className="p-8 text-center">
               <div 
@@ -114,7 +117,7 @@ export default function NotificationsModal({ isOpen, onClose }) {
                   }}
                 >
                   {/* Icon */}
-                  <div className="flex-shrink-0 text-xl mt-0.5">
+                  <div className="text-xl mt-0.5 shrink-0">
                     {getNotificationIcon(notification.type)}
                   </div>
 
@@ -129,7 +132,7 @@ export default function NotificationsModal({ isOpen, onClose }) {
                       </h4>
                       {!notification.read && (
                         <div 
-                          className="w-2 h-2 rounded-full mt-1 flex-shrink-0"
+                          className="w-2 h-2 rounded-full mt-1 shrink-0"
                           style={{ backgroundColor: '#6366f1' }}
                         />
                       )}
@@ -152,7 +155,7 @@ export default function NotificationsModal({ isOpen, onClose }) {
                   {!notification.read && (
                     <button
                       onClick={() => handleMarkRead(notification.id)}
-                      className="p-1 hover:bg-opacity-10 rounded transition-colors flex-shrink-0"
+                      className="p-1 hover:bg-opacity-10 rounded transition-colors shrink-0"
                       style={{ color: '#6366f1' }}
                       title="Mark as read"
                     >
@@ -168,7 +171,7 @@ export default function NotificationsModal({ isOpen, onClose }) {
         {/* Footer */}
         {notifications.length > 0 && (
           <div 
-            className="flex flex-col-reverse sm:flex-row items-center sm:justify-between gap-2 sm:gap-3 px-4 sm:px-6 py-3 sm:py-4 border-t shrink-0 w-full"
+            className="flex flex-col-reverse sm:flex-row items-center sm:justify-between gap-2 px-6 py-4 border-t shrink-0 w-full"
             style={{ borderColor: 'var(--border-subtle)' }}
           >
             <button
