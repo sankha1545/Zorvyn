@@ -212,16 +212,24 @@ const useStore = create((set, get) => ({
     set({ analyticsLoading: true });
     try {
       const response = await getAnalytics();
-      if (response.success) {
+      console.log('fetchAnalytics response:', response);
+      
+      if (response && response.success) {
+        // response.data contains { currentMonth, balanceTrend, spendingBreakdown, insights }
+        // We store it directly as analytics
+        console.log('Analytics fetched successfully:', response.data);
         set({
-          analytics: response.data,
+          analytics: response.data, // Store the data payload directly
           analyticsError: null,
         });
+        return response.data;
       } else {
-        set({ analyticsError: response.error.message });
+        console.error('Analytics fetch failed:', response);
+        set({ analyticsError: response?.error?.message || 'Failed to fetch analytics' });
       }
     } catch (error) {
-      set({ analyticsError: error.message });
+      console.error('Analytics error:', error);
+      set({ analyticsError: error.message || 'Unknown error' });
     } finally {
       set({ analyticsLoading: false });
     }

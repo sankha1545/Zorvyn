@@ -232,6 +232,7 @@ export const deleteTransaction = async (id) => {
 // GET: Analytics dashboard data
 export const getAnalytics = async () => {
   try {
+    console.log('Fetching analytics from:', `${API_BASE}/analytics`);
     const response = await fetch(`${API_BASE}/analytics`, {
       method: 'GET',
       headers: {
@@ -239,13 +240,17 @@ export const getAnalytics = async () => {
       },
     });
 
+    console.log('Analytics response status:', response.status, response.statusText);
+
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
 
     const result = await response.json();
+    console.log('Analytics result:', result);
     return result;
   } catch (error) {
+    console.error('Analytics fetch error:', error);
     return handleError(error);
   }
 };

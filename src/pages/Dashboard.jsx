@@ -58,18 +58,31 @@ export default function Dashboard() {
   const transactions = useStore((s) => s.transactions);
   const analytics = useStore((s) => s.analytics);
   const analyticsLoading = useStore((s) => s.analyticsLoading);
+  const analyticsError = useStore((s) => s.analyticsError);
   const fetchAnalytics = useStore((s) => s.fetchAnalytics);
 
-  // Fetch analytics on component mount
+  // Fetch analytics on component mount and on demand
   useEffect(() => {
-    if (!analytics && !analyticsLoading) {
-      fetchAnalytics();
-    }
-  }, []);
+    const loadAnalytics = async () => {
+      console.log('Dashboard: Fetching analytics...', { analytics, analyticsLoading, analyticsError });
+      if (!analytics || analyticsError) {
+        try {
+          await fetchAnalytics();
+        } catch (error) {
+          console.error('Failed to fetch analytics:', error);
+        }
+      }
+    };
+
+    loadAnalytics();
+  }, []); // Run once on mount
 
   // Extract analytics data safely
   const analyticsData = useMemo(() => {
-    if (!analytics || !analytics.data) {
+    console.log('Computing analytics data:', { analytics, analyticsLoading, analyticsError });
+    
+    if (!analytics) {
+      console.log('No analytics data available yet');
       return {
         currentTotals: { income: 0, expenses: 0, balance: 0 },
         balanceTrend: [],
@@ -85,7 +98,15 @@ export default function Dashboard() {
       };
     }
 
-    const { currentMonth, balanceTrend, spendingBreakdown, insights } = analytics.data;
+    // analytics is stored directly as the data payload from response.data
+    const { currentMonth, balanceTrend, spendingBreakdown, insights } = analytics;
+
+    console.log('Analytics extracted:', {
+      currentMonth,
+      balanceTrendCount: balanceTrend?.length,
+      spendingBreakdownCount: spendingBreakdown?.length,
+      insights,
+    });
 
     return {
       currentTotals: currentMonth || { income: 0, expenses: 0, balance: 0 },
@@ -97,7 +118,7 @@ export default function Dashboard() {
 
   const isLoaded = !isLoading && !analyticsLoading && analytics;
 
-  if (isLoading || analyticsLoading) {
+  if (isLoading || (analyticsLoading && !analytics)) {
     return (
       <div className="p-4 lg:p-6 space-y-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
@@ -106,6 +127,31 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
           <div className="xl:col-span-2"><ChartSkeleton /></div>
           <ChartSkeleton />
+        </div>
+      </div>
+    );
+  }
+
+  if (analyticsError) {
+    return (
+      <div className="p-4 lg:p-6">
+        <div className="rounded-lg border border-red-500/50 bg-red-500/10 p-4">
+          <p style={{ color: 'var(--text-primary)' }} className="font-semibold">
+            Error Loading Dashboard
+          </p>
+          <p style={{ color: 'var(--text-muted)' }} className="text-sm mt-1">
+            {analyticsError}
+          </p>
+          <button
+            onClick={() => fetchAnalytics()}
+            className="mt-3 px-3 py-1.5 rounded-lg text-sm font-medium"
+            style={{
+              backgroundColor: '#6366f1',
+              color: 'white',
+            }}
+          >
+            Retry
+          </button>
         </div>
       </div>
     );

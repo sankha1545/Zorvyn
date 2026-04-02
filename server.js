@@ -221,8 +221,10 @@ app.delete('/api/transactions/:id', (req, res) => {
  */
 app.get('/api/analytics', (req, res) => {
   try {
+    console.log('[Analytics] Request received');
     const db = readDb();
     const transactions = db.transactions || [];
+    console.log('[Analytics] Total transactions:', transactions.length);
 
     // Get current month (March 2026)
     const currentMonth = transactions.filter(t => t.date.startsWith('2026-03'));
