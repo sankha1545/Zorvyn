@@ -52,7 +52,7 @@ export default function Transactions() {
   const [sortField, setSortField] = useState('date');
   const [sortDirection, setSortDirection] = useState('desc');
   const [page, setPage] = useState(1);
-  const rowsPerPage = 10;
+  const rowsPerPage = 5;
 
   // Advanced Filters
   const [dateFrom, setDateFrom] = useState('');
@@ -456,6 +456,7 @@ export default function Transactions() {
         formatDate={formatDate}
         showEmptyState={paginatedTransactions.length === 0}
         role={role}
+        pageKey={page}
       />
 
       {/* Pagination */}

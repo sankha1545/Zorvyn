@@ -13,7 +13,12 @@ export default function TransactionTable({
   formatDate,
   showEmptyState = false,
   role = 'admin',
+  pageKey = 0,
 }) {
+  // Smooth page transition animation
+  const tableStyle = {
+    animation: pageKey > 0 ? 'fadeIn 0.3s ease-in-out' : 'none',
+  };
   const renderSortIcon = (field) => {
     if (sortField !== field) {
       return <ArrowUpDown size={14} style={{ color: 'var(--text-muted)' }} />;
@@ -54,7 +59,19 @@ export default function TransactionTable({
   }
 
   return (
-    <div className="w-full overflow-x-auto">
+    <div className="w-full overflow-x-auto" style={tableStyle}>
+      <style>{`
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(8px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
       <table className="w-full">
         <TableHeader>
           <TableRow style={{ backgroundColor: 'var(--bg-input)' }}>
