@@ -213,18 +213,26 @@ const useStore = create((set, get) => ({
     try {
       const response = await getAnalytics();
       console.log('fetchAnalytics response:', response);
+      console.log('response.data structure:', response?.data);
       
-      if (response && response.success) {
-        // response.data contains { currentMonth, balanceTrend, spendingBreakdown, insights }
-        // We store it directly as analytics
-        console.log('Analytics fetched successfully:', response.data);
+      if (response && response.success && response.data) {
+        // Verify we have all required fields
+        const { currentMonth, balanceTrend, spendingBreakdown, insights } = response.data;
+        console.log('Full analytics payload:', {
+          hasCurrentMonth: !!currentMonth,
+          hasBalanceTrend: !!balanceTrend,
+          hasSpendingBreakdown: !!spendingBreakdown,
+          hasInsights: !!insights,
+        });
+        
+        // Store the complete data payload directly as analytics
         set({
-          analytics: response.data, // Store the data payload directly
+          analytics: response.data,
           analyticsError: null,
         });
         return response.data;
       } else {
-        console.error('Analytics fetch failed:', response);
+        console.error('Analytics fetch failed - invalid response structure:', response);
         set({ analyticsError: response?.error?.message || 'Failed to fetch analytics' });
       }
     } catch (error) {

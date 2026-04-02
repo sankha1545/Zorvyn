@@ -224,16 +224,20 @@ app.get('/api/analytics', (req, res) => {
     console.log('[Analytics] Request received');
     const db = readDb();
     const transactions = db.transactions || [];
-    console.log('[Analytics] Total transactions:', transactions.length);
+    console.log('[Analytics] Total transactions in db:', transactions.length);
 
     // Get current month (March 2026)
     const currentMonth = transactions.filter(t => t.date.startsWith('2026-03'));
+    console.log('[Analytics] March 2026 transactions found:', currentMonth.length);
+    
     const currentIncome = currentMonth
       .filter(t => t.type === 'Income')
       .reduce((sum, t) => sum + parseFloat(t.amount), 0);
     const currentExpenses = currentMonth
       .filter(t => t.type === 'Expense')
       .reduce((sum, t) => sum + parseFloat(t.amount), 0);
+
+    console.log('[Analytics] Current month - Income:', currentIncome, 'Expenses:', currentExpenses);
 
     // Get previous month for comparison (February 2026)
     const previousMonth = transactions.filter(t => t.date.startsWith('2026-02'));
@@ -267,6 +271,8 @@ app.get('/api/analytics', (req, res) => {
         };
       });
 
+    console.log('[Analytics] Balance trend points:', balanceTrend.length);
+
     // Spending breakdown by category
     const spendingByCategory = {};
     currentMonth
@@ -285,6 +291,8 @@ app.get('/api/analytics', (req, res) => {
         value: parseFloat(amount.toFixed(2)),
       }))
       .sort((a, b) => b.value - a.value);
+
+    console.log('[Analytics] Spending breakdown categories:', Object.keys(spendingByCategory));
 
     // Calculate insights
     const topCategory = spendingBreakdown.length > 0 ? spendingBreakdown[0] : { name: 'N/A', value: 0 };
@@ -308,7 +316,7 @@ app.get('/api/analytics', (req, res) => {
       ? (((currentExpenses - previousExpenses) / previousExpenses) * 100).toFixed(1)
       : 0;
 
-    res.json({
+    const analyticsResponse = {
       success: true,
       data: {
         currentMonth: {
@@ -334,7 +342,15 @@ app.get('/api/analytics', (req, res) => {
         transactionCount: transactions.length,
         currentMonthCount: currentMonth.length,
       },
-    });
+    };
+
+    console.log('[Analytics] Response data keys:', Object.keys(analyticsResponse.data));
+    console.log('[Analytics] Data.currentMonth:', analyticsResponse.data.currentMonth);
+    console.log('[Analytics] Data.balanceTrend length:', analyticsResponse.data.balanceTrend.length);
+    console.log('[Analytics] Data.spendingBreakdown:', analyticsResponse.data.spendingBreakdown);
+    console.log('[Analytics] Data.insights:', analyticsResponse.data.insights);
+
+    res.json(analyticsResponse);
   } catch (error) {
     console.error('Analytics error:', error);
     res.status(500).json({
