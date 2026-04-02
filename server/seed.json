@@ -1,0 +1,504 @@
+{
+  "transactions": [
+    {
+      "id": 1,
+      "date": "2026-03-01",
+      "description": "Monthly Salary",
+      "amount": 8500,
+      "category": "Salary",
+      "type": "Income",
+      "merchant": "Acme Corp",
+      "status": "Completed"
+    },
+    {
+      "id": 2,
+      "date": "2026-03-02",
+      "description": "Rent Payment",
+      "amount": 2200,
+      "category": "Rent & Housing",
+      "type": "Expense",
+      "merchant": "Landlord",
+      "status": "Completed"
+    },
+    {
+      "id": 3,
+      "date": "2026-03-03",
+      "description": "Grocery Shopping",
+      "amount": 156.43,
+      "category": "Food & Dining",
+      "type": "Expense",
+      "merchant": "Whole Foods",
+      "status": "Completed"
+    },
+    {
+      "id": 4,
+      "date": "2026-03-04",
+      "description": "Netflix Subscription",
+      "amount": 15.99,
+      "category": "Entertainment",
+      "type": "Expense",
+      "merchant": "Netflix",
+      "status": "Completed"
+    },
+    {
+      "id": 5,
+      "date": "2026-03-05",
+      "description": "Uber Ride",
+      "amount": 24.50,
+      "category": "Transportation",
+      "type": "Expense",
+      "merchant": "Uber",
+      "status": "Completed"
+    },
+    {
+      "id": 6,
+      "date": "2026-03-06",
+      "description": "Freelance Project",
+      "amount": 2500,
+      "category": "Freelance",
+      "type": "Income",
+      "merchant": "Freelance Client A",
+      "status": "Completed"
+    },
+    {
+      "id": 7,
+      "date": "2026-03-07",
+      "description": "Coffee & Snacks",
+      "amount": 18.75,
+      "category": "Food & Dining",
+      "type": "Expense",
+      "merchant": "Starbucks",
+      "status": "Completed"
+    },
+    {
+      "id": 8,
+      "date": "2026-03-08",
+      "description": "Electric Bill",
+      "amount": 142.30,
+      "category": "Utilities",
+      "type": "Expense",
+      "merchant": "Electric Co.",
+      "status": "Completed"
+    },
+    {
+      "id": 9,
+      "date": "2026-03-09",
+      "description": "Online Shopping",
+      "amount": 89.99,
+      "category": "Shopping",
+      "type": "Expense",
+      "merchant": "Amazon",
+      "status": "Completed"
+    },
+    {
+      "id": 10,
+      "date": "2026-03-10",
+      "description": "Gym Membership",
+      "amount": 49.99,
+      "category": "Healthcare",
+      "type": "Expense",
+      "merchant": "City Fitness",
+      "status": "Completed"
+    },
+    {
+      "id": 11,
+      "date": "2026-03-11",
+      "description": "Spotify Premium",
+      "amount": 9.99,
+      "category": "Entertainment",
+      "type": "Expense",
+      "merchant": "Spotify",
+      "status": "Completed"
+    },
+    {
+      "id": 12,
+      "date": "2026-03-12",
+      "description": "Gas Station",
+      "amount": 52.00,
+      "category": "Transportation",
+      "type": "Expense",
+      "merchant": "Shell",
+      "status": "Completed"
+    },
+    {
+      "id": 13,
+      "date": "2026-03-13",
+      "description": "Dinner Out",
+      "amount": 78.50,
+      "category": "Food & Dining",
+      "type": "Expense",
+      "merchant": "Chipotle",
+      "status": "Completed"
+    },
+    {
+      "id": 14,
+      "date": "2026-03-14",
+      "description": "Stock Dividend",
+      "amount": 125.00,
+      "category": "Investment",
+      "type": "Income",
+      "merchant": "Stock Dividend",
+      "status": "Completed"
+    },
+    {
+      "id": 15,
+      "date": "2026-03-15",
+      "description": "Freelance Project B",
+      "amount": 1800,
+      "category": "Freelance",
+      "type": "Income",
+      "merchant": "Freelance Client B",
+      "status": "Completed"
+    },
+    {
+      "id": 16,
+      "date": "2026-03-16",
+      "description": "Phone Bill",
+      "amount": 85.00,
+      "category": "Utilities",
+      "type": "Expense",
+      "merchant": "T-Mobile",
+      "status": "Completed"
+    },
+    {
+      "id": 17,
+      "date": "2026-03-17",
+      "description": "Home Supplies",
+      "amount": 134.25,
+      "category": "Shopping",
+      "type": "Expense",
+      "merchant": "Home Depot",
+      "status": "Completed"
+    },
+    {
+      "id": 18,
+      "date": "2026-03-18",
+      "description": "Water Bill",
+      "amount": 45.00,
+      "category": "Utilities",
+      "type": "Expense",
+      "merchant": "Water Works",
+      "status": "Completed"
+    },
+    {
+      "id": 19,
+      "date": "2026-03-19",
+      "description": "Costco Bulk Buy",
+      "amount": 267.80,
+      "category": "Food & Dining",
+      "type": "Expense",
+      "merchant": "Costco",
+      "status": "Completed"
+    },
+    {
+      "id": 20,
+      "date": "2026-03-20",
+      "description": "Online Course",
+      "amount": 199.99,
+      "category": "Education",
+      "type": "Expense",
+      "merchant": "Udemy",
+      "status": "Completed"
+    },
+    {
+      "id": 21,
+      "date": "2026-03-21",
+      "description": "Target Shopping",
+      "amount": 95.40,
+      "category": "Shopping",
+      "type": "Expense",
+      "merchant": "Target",
+      "status": "Completed"
+    },
+    {
+      "id": 22,
+      "date": "2026-03-22",
+      "description": "Doctor Visit",
+      "amount": 150.00,
+      "category": "Healthcare",
+      "type": "Expense",
+      "merchant": "CVS Pharmacy",
+      "status": "Pending"
+    },
+    {
+      "id": 23,
+      "date": "2026-03-23",
+      "description": "Google Workspace",
+      "amount": 12.00,
+      "category": "Utilities",
+      "type": "Expense",
+      "merchant": "Google Workspace",
+      "status": "Completed"
+    },
+    {
+      "id": 24,
+      "date": "2026-03-24",
+      "description": "Weekend Groceries",
+      "amount": 98.60,
+      "category": "Food & Dining",
+      "type": "Expense",
+      "merchant": "Trader Joe's",
+      "status": "Completed"
+    },
+    {
+      "id": 25,
+      "date": "2026-03-25",
+      "description": "Movie Tickets",
+      "amount": 32.00,
+      "category": "Entertainment",
+      "type": "Expense",
+      "merchant": "AMC Theaters",
+      "status": "Completed"
+    },
+    {
+      "id": 26,
+      "date": "2026-03-26",
+      "description": "Uber Ride",
+      "amount": 18.75,
+      "category": "Transportation",
+      "type": "Expense",
+      "merchant": "Uber",
+      "status": "Completed"
+    },
+    {
+      "id": 27,
+      "date": "2026-03-27",
+      "description": "Apple Store Purchase",
+      "amount": 249.00,
+      "category": "Shopping",
+      "type": "Expense",
+      "merchant": "Apple Store",
+      "status": "Pending"
+    },
+    {
+      "id": 28,
+      "date": "2026-03-28",
+      "description": "Lunch Meeting",
+      "amount": 45.00,
+      "category": "Food & Dining",
+      "type": "Expense",
+      "merchant": "Starbucks",
+      "status": "Completed"
+    },
+    {
+      "id": 29,
+      "date": "2026-03-29",
+      "description": "Flight Booking",
+      "amount": 385.00,
+      "category": "Travel",
+      "type": "Expense",
+      "merchant": "Delta Airlines",
+      "status": "Pending"
+    },
+    {
+      "id": 30,
+      "date": "2026-03-30",
+      "description": "Airbnb Reservation",
+      "amount": 420.00,
+      "category": "Travel",
+      "type": "Expense",
+      "merchant": "Airbnb",
+      "status": "Pending"
+    },
+    {
+      "id": 31,
+      "date": "2026-03-31",
+      "description": "Grocery Run",
+      "amount": 67.25,
+      "category": "Food & Dining",
+      "type": "Expense",
+      "merchant": "Whole Foods",
+      "status": "Completed"
+    },
+    {
+      "id": 32,
+      "date": "2026-02-01",
+      "description": "Monthly Salary",
+      "amount": 8500,
+      "category": "Salary",
+      "type": "Income",
+      "merchant": "Acme Corp",
+      "status": "Completed"
+    },
+    {
+      "id": 33,
+      "date": "2026-02-02",
+      "description": "Rent Payment",
+      "amount": 2200,
+      "category": "Rent & Housing",
+      "type": "Expense",
+      "merchant": "Landlord",
+      "status": "Completed"
+    },
+    {
+      "id": 34,
+      "date": "2026-02-04",
+      "description": "Grocery Shopping",
+      "amount": 189.30,
+      "category": "Food & Dining",
+      "type": "Expense",
+      "merchant": "Whole Foods",
+      "status": "Completed"
+    },
+    {
+      "id": 35,
+      "date": "2026-02-05",
+      "description": "Netflix Subscription",
+      "amount": 15.99,
+      "category": "Entertainment",
+      "type": "Expense",
+      "merchant": "Netflix",
+      "status": "Completed"
+    },
+    {
+      "id": 36,
+      "date": "2026-02-06",
+      "description": "Gas Station",
+      "amount": 48.00,
+      "category": "Transportation",
+      "type": "Expense",
+      "merchant": "Shell",
+      "status": "Completed"
+    },
+    {
+      "id": 37,
+      "date": "2026-02-08",
+      "description": "Electric Bill",
+      "amount": 158.45,
+      "category": "Utilities",
+      "type": "Expense",
+      "merchant": "Electric Co.",
+      "status": "Completed"
+    },
+    {
+      "id": 38,
+      "date": "2026-02-10",
+      "description": "Freelance Project",
+      "amount": 1500,
+      "category": "Freelance",
+      "type": "Income",
+      "merchant": "Freelance Client A",
+      "status": "Completed"
+    },
+    {
+      "id": 39,
+      "date": "2026-02-12",
+      "description": "Online Shopping",
+      "amount": 210.50,
+      "category": "Shopping",
+      "type": "Expense",
+      "merchant": "Amazon",
+      "status": "Completed"
+    },
+    {
+      "id": 40,
+      "date": "2026-02-14",
+      "description": "Valentine's Dinner",
+      "amount": 145.00,
+      "category": "Food & Dining",
+      "type": "Expense",
+      "merchant": "Fancy Restaurant",
+      "status": "Completed"
+    },
+    {
+      "id": 41,
+      "date": "2026-02-15",
+      "description": "Stock Dividend",
+      "amount": 110.00,
+      "category": "Investment",
+      "type": "Income",
+      "merchant": "Stock Dividend",
+      "status": "Completed"
+    },
+    {
+      "id": 42,
+      "date": "2026-02-16",
+      "description": "Phone Bill",
+      "amount": 85.00,
+      "category": "Utilities",
+      "type": "Expense",
+      "merchant": "T-Mobile",
+      "status": "Completed"
+    },
+    {
+      "id": 43,
+      "date": "2026-02-18",
+      "description": "Gym Membership",
+      "amount": 49.99,
+      "category": "Healthcare",
+      "type": "Expense",
+      "merchant": "City Fitness",
+      "status": "Completed"
+    },
+    {
+      "id": 44,
+      "date": "2026-02-19",
+      "description": "Spotify Premium",
+      "amount": 9.99,
+      "category": "Entertainment",
+      "type": "Expense",
+      "merchant": "Spotify",
+      "status": "Completed"
+    },
+    {
+      "id": 45,
+      "date": "2026-02-20",
+      "description": "Target Shopping",
+      "amount": 76.20,
+      "category": "Shopping",
+      "type": "Expense",
+      "merchant": "Target",
+      "status": "Completed"
+    },
+    {
+      "id": 46,
+      "date": "2026-02-22",
+      "description": "Uber Rides",
+      "amount": 35.50,
+      "category": "Transportation",
+      "type": "Expense",
+      "merchant": "Uber",
+      "status": "Completed"
+    },
+    {
+      "id": 47,
+      "date": "2026-02-24",
+      "description": "Water Bill",
+      "amount": 42.00,
+      "category": "Utilities",
+      "type": "Expense",
+      "merchant": "Water Works",
+      "status": "Completed"
+    },
+    {
+      "id": 48,
+      "date": "2026-02-25",
+      "description": "Costco Shopping",
+      "amount": 234.15,
+      "category": "Food & Dining",
+      "type": "Expense",
+      "merchant": "Costco",
+      "status": "Completed"
+    },
+    {
+      "id": 49,
+      "date": "2026-02-27",
+      "description": "Google Workspace",
+      "amount": 12.00,
+      "category": "Utilities",
+      "type": "Expense",
+      "merchant": "Google Workspace",
+      "status": "Completed"
+    },
+    {
+      "id": 50,
+      "date": "2026-02-28",
+      "description": "Movie Night",
+      "amount": 28.00,
+      "category": "Entertainment",
+      "type": "Expense",
+      "merchant": "AMC Theaters",
+      "status": "Completed"
+    }
+  ]
+}
