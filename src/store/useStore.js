@@ -122,6 +122,9 @@ const useStore = create((set, get) => ({
           transactions: [response.data.transaction, ...state.transactions],
           transactionError: null,
         }));
+        // Refresh analytics
+        const state = get();
+        await state.fetchAnalytics();
         return response;
       } else {
         set({ transactionError: response.error.message });
@@ -147,6 +150,9 @@ const useStore = create((set, get) => ({
           ),
           transactionError: null,
         }));
+        // Refresh analytics
+        const state = get();
+        await state.fetchAnalytics();
         return response;
       } else {
         set({ transactionError: response.error.message });
@@ -170,6 +176,9 @@ const useStore = create((set, get) => ({
           transactions: state.transactions.filter(t => t.id !== id),
           transactionError: null,
         }));
+        // Refresh analytics
+        const state = get();
+        await state.fetchAnalytics();
         return response;
       } else {
         set({ transactionError: response.error.message });

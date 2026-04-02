@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip,
   PieChart, Pie, Cell, Legend,
@@ -10,11 +10,6 @@ import {
 import { StatCard, ChartContainer } from '../components/Dashboard';
 import { StatCardSkeleton, ChartSkeleton } from '../components/Dashboard/SkeletonLoader';
 import useStore from '../store/useStore';
-import {
-  balanceTrend,
-  spendingBreakdown,
-  insights,
-} from '../data/mockData';
 
 const formatCurrency = (value) =>
   new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(value);
@@ -61,15 +56,48 @@ const CustomPieTooltip = ({ active, payload }) => {
 export default function Dashboard() {
   const isLoading = useStore((s) => s.isLoading);
   const transactions = useStore((s) => s.transactions);
+  const analytics = useStore((s) => s.analytics);
+  const analyticsLoading = useStore((s) => s.analyticsLoading);
+  const fetchAnalytics = useStore((s) => s.fetchAnalytics);
 
-  const currentTotals = useMemo(() => {
-    const currentMonth = transactions.filter(t => t.date.startsWith('2026-03'));
-    const income = currentMonth.filter(t => t.type === 'Income').reduce((s, t) => s + t.amount, 0);
-    const expenses = currentMonth.filter(t => t.type === 'Expense').reduce((s, t) => s + t.amount, 0);
-    return { income, expenses, balance: income - expenses };
-  }, [transactions]);
+  // Fetch analytics on component mount
+  useEffect(() => {
+    if (!analytics && !analyticsLoading) {
+      fetchAnalytics();
+    }
+  }, []);
 
-  if (isLoading) {
+  // Extract analytics data safely
+  const analyticsData = useMemo(() => {
+    if (!analytics || !analytics.data) {
+      return {
+        currentTotals: { income: 0, expenses: 0, balance: 0 },
+        balanceTrend: [],
+        spendingBreakdown: [],
+        insights: {
+          topCategory: 'N/A',
+          topCategoryAmount: 0,
+          topMerchant: 'N/A',
+          topMerchantAmount: 0,
+          expenseChange: 0,
+          savingsRate: 0,
+        },
+      };
+    }
+
+    const { currentMonth, balanceTrend, spendingBreakdown, insights } = analytics.data;
+
+    return {
+      currentTotals: currentMonth || { income: 0, expenses: 0, balance: 0 },
+      balanceTrend: balanceTrend || [],
+      spendingBreakdown: spendingBreakdown || [],
+      insights: insights || {},
+    };
+  }, [analytics]);
+
+  const isLoaded = !isLoading && !analyticsLoading && analytics;
+
+  if (isLoading || analyticsLoading) {
     return (
       <div className="p-4 lg:p-6 space-y-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
@@ -83,6 +111,13 @@ export default function Dashboard() {
     );
   }
 
+  // Add colors to spending breakdown for pie chart
+  const colors = ['#6366f1', '#ec4899', '#f59e0b', '#10b981', '#06b6d4', '#8b5cf6', '#ef4444', '#14b8a6'];
+  const spendingWithColors = (analyticsData.spendingBreakdown || []).map((item, index) => ({
+    ...item,
+    color: colors[index % colors.length],
+  }));
+
   return (
     <div className="p-4 lg:p-6 space-y-6">
       {/* Page header */}
@@ -95,15 +130,15 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         <StatCard
           title="Total Balance"
-          value={formatCurrency(currentTotals.balance)}
+          value={formatCurrency(analyticsData.currentTotals.balance)}
           icon={Wallet}
-          trend={8.2}
+          trend={analyticsData.insights.expenseChange || 0}
           trendLabel="vs last month"
           color="primary"
         />
         <StatCard
           title="Monthly Income"
-          value={formatCurrency(currentTotals.income)}
+          value={formatCurrency(analyticsData.currentTotals.income)}
           icon={TrendingUp}
           trend={15.3}
           trendLabel="vs last month"
@@ -111,15 +146,15 @@ export default function Dashboard() {
         />
         <StatCard
           title="Monthly Expenses"
-          value={formatCurrency(currentTotals.expenses)}
+          value={formatCurrency(analyticsData.currentTotals.expenses)}
           icon={TrendingDown}
-          trend={insights.expenseChange}
+          trend={analyticsData.insights.expenseChange || 0}
           trendLabel="vs last month"
           color="danger"
         />
         <StatCard
           title="Savings Rate"
-          value={`${Math.round((currentTotals.balance / currentTotals.income) * 100)}%`}
+          value={`${analyticsData.insights.savingsRate || 0}%`}
           icon={ArrowUpRight}
           trend={3.1}
           trendLabel="improvement"
@@ -135,7 +170,7 @@ export default function Dashboard() {
           subtitle="30-day balance fluctuations"
           className="xl:col-span-2"
         >
-          <AreaChart data={balanceTrend} margin={{ top: 10, right: 20, left: 10, bottom: 0 }}>
+          <AreaChart data={analyticsData.balanceTrend} margin={{ top: 10, right: 20, left: 10, bottom: 0 }}>
             <defs>
               <linearGradient id="balanceGradient" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3} />
@@ -175,32 +210,38 @@ export default function Dashboard() {
           title="Spending Breakdown"
           subtitle="By category this month"
         >
-          <PieChart>
-            <Pie
-              data={spendingBreakdown}
-              cx="50%"
-              cy="45%"
-              innerRadius={55}
-              outerRadius={90}
-              paddingAngle={3}
-              dataKey="value"
-              stroke="none"
-            >
-              {spendingBreakdown.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.color} />
-              ))}
-            </Pie>
-            <RechartsTooltip content={<CustomPieTooltip />} />
-            <Legend
-              verticalAlign="bottom"
-              height={36}
-              iconType="circle"
-              iconSize={8}
-              formatter={(value) => (
-                <span className="text-[11px]" style={{ color: 'var(--text-muted)' }}>{value}</span>
-              )}
-            />
-          </PieChart>
+          {spendingWithColors.length > 0 ? (
+            <PieChart>
+              <Pie
+                data={spendingWithColors}
+                cx="50%"
+                cy="45%"
+                innerRadius={55}
+                outerRadius={90}
+                paddingAngle={3}
+                dataKey="value"
+                stroke="none"
+              >
+                {spendingWithColors.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.color} />
+                ))}
+              </Pie>
+              <RechartsTooltip content={<CustomPieTooltip />} />
+              <Legend
+                verticalAlign="bottom"
+                height={36}
+                iconType="circle"
+                iconSize={8}
+                formatter={(value) => (
+                  <span className="text-[11px]" style={{ color: 'var(--text-muted)' }}>{value}</span>
+                )}
+              />
+            </PieChart>
+          ) : (
+            <div className="flex items-center justify-center h-64">
+              <p style={{ color: 'var(--text-muted)' }}>No expense data available</p>
+            </div>
+          )}
         </ChartContainer>
       </div>
 
@@ -215,19 +256,21 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <StatCard
             title="Highest Spending"
-            value={insights.highestCategory.name}
+            value={analyticsData.insights.topCategory || 'N/A'}
+            subtitle={`$${formatCurrencyFull(analyticsData.insights.topCategoryAmount || 0)}`}
             icon={ShoppingBag}
             color="warning"
           />
           <StatCard
             title="Monthly Change"
-            value={`${insights.expenseChange >= 0 ? '+' : ''}${insights.expenseChange}%`}
+            value={`${analyticsData.insights.expenseChange >= 0 ? '+' : ''}${analyticsData.insights.expenseChange || 0}%`}
             icon={BarChart3}
-            color={insights.expenseChange >= 0 ? 'danger' : 'success'}
+            color={analyticsData.insights.expenseChange >= 0 ? 'danger' : 'success'}
           />
           <StatCard
             title="Top Merchant"
-            value={insights.topMerchant.name}
+            value={analyticsData.insights.topMerchant || 'N/A'}
+            subtitle={`$${formatCurrencyFull(analyticsData.insights.topMerchantAmount || 0)}`}
             icon={Store}
             color="secondary"
           />

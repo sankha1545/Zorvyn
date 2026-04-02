@@ -217,31 +217,124 @@ app.delete('/api/transactions/:id', (req, res) => {
 
 /**
  * GET /api/analytics
- * Get analytics data
+ * Get comprehensive analytics data
  */
 app.get('/api/analytics', (req, res) => {
   try {
     const db = readDb();
     const transactions = db.transactions || [];
 
+    // Get current month (March 2026)
     const currentMonth = transactions.filter(t => t.date.startsWith('2026-03'));
-    const income = currentMonth
+    const currentIncome = currentMonth
       .filter(t => t.type === 'Income')
-      .reduce((sum, t) => sum + t.amount, 0);
-    const expenses = currentMonth
+      .reduce((sum, t) => sum + parseFloat(t.amount), 0);
+    const currentExpenses = currentMonth
       .filter(t => t.type === 'Expense')
-      .reduce((sum, t) => sum + t.amount, 0);
+      .reduce((sum, t) => sum + parseFloat(t.amount), 0);
+
+    // Get previous month for comparison (February 2026)
+    const previousMonth = transactions.filter(t => t.date.startsWith('2026-02'));
+    const previousExpenses = previousMonth
+      .filter(t => t.type === 'Expense')
+      .reduce((sum, t) => sum + parseFloat(t.amount), 0);
+
+    // Calculate daily balance trend
+    const dailyBalance = {};
+    transactions.forEach(t => {
+      const amount = parseFloat(t.amount);
+      const type = t.type;
+      
+      if (!dailyBalance[t.date]) {
+        dailyBalance[t.date] = 0;
+      }
+      
+      dailyBalance[t.date] += type === 'Income' ? amount : -amount;
+    });
+
+    // Convert to cumulative balance
+    let cumulativeBalance = 0;
+    const balanceTrend = Object.entries(dailyBalance)
+      .sort(([dateA], [dateB]) => dateA.localeCompare(dateB))
+      .map(([date, dailyChange]) => {
+        cumulativeBalance += dailyChange;
+        return {
+          date: new Date(date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+          balance: cumulativeBalance,
+          fullDate: date,
+        };
+      });
+
+    // Spending breakdown by category
+    const spendingByCategory = {};
+    currentMonth
+      .filter(t => t.type === 'Expense')
+      .forEach(t => {
+        const category = t.category || 'Other';
+        if (!spendingByCategory[category]) {
+          spendingByCategory[category] = 0;
+        }
+        spendingByCategory[category] += parseFloat(t.amount);
+      });
+
+    const spendingBreakdown = Object.entries(spendingByCategory)
+      .map(([category, amount]) => ({
+        name: category,
+        value: parseFloat(amount.toFixed(2)),
+      }))
+      .sort((a, b) => b.value - a.value);
+
+    // Calculate insights
+    const topCategory = spendingBreakdown.length > 0 ? spendingBreakdown[0] : { name: 'N/A', value: 0 };
+    
+    // Find top merchant
+    const merchantSpending = {};
+    currentMonth.forEach(t => {
+      const merchant = t.merchant || 'Unknown';
+      if (!merchantSpending[merchant]) {
+        merchantSpending[merchant] = 0;
+      }
+      merchantSpending[merchant] += parseFloat(t.amount);
+    });
+
+    const topMerchant = Object.entries(merchantSpending)
+      .sort((a, b) => b[1] - a[1])
+      .map(([name, value]) => ({ name, value }))[0] || { name: 'N/A', value: 0 };
+
+    // Calculate expense change percentage
+    const expenseChange = previousExpenses > 0
+      ? (((currentExpenses - previousExpenses) / previousExpenses) * 100).toFixed(1)
+      : 0;
 
     res.json({
       success: true,
       data: {
-        income,
-        expenses,
-        balance: income - expenses,
+        currentMonth: {
+          income: parseFloat(currentIncome.toFixed(2)),
+          expenses: parseFloat(currentExpenses.toFixed(2)),
+          balance: parseFloat((currentIncome - currentExpenses).toFixed(2)),
+        },
+        previousMonth: {
+          expenses: parseFloat(previousExpenses.toFixed(2)),
+        },
+        balanceTrend,
+        spendingBreakdown,
+        insights: {
+          topCategory: topCategory.name,
+          topCategoryAmount: topCategory.value,
+          topMerchant: topMerchant.name,
+          topMerchantAmount: topMerchant.value,
+          expenseChange: parseFloat(expenseChange),
+          savingsRate: currentIncome > 0 
+            ? Math.round(((currentIncome - currentExpenses) / currentIncome) * 100)
+            : 0,
+        },
         transactionCount: transactions.length,
+        currentMonthCount: currentMonth.length,
       },
     });
   } catch (error) {
+    console.error('Analytics error:', error);
     res.status(500).json({
       success: false,
       error: { message: 'Failed to fetch analytics' },

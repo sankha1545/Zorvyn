@@ -1,6 +1,6 @@
 import { Card } from '@heroui/react';
 
-export default function StatCard({ title, value, icon: Icon, trend, trendLabel, color = 'primary', className = '' }) {
+export default function StatCard({ title, value, icon: Icon, trend, trendLabel, color = 'primary', className = '', subtitle }) {
   const iconBgClasses = {
     primary: 'bg-indigo-500/15 text-indigo-400',
     success: 'bg-emerald-500/15 text-emerald-400',
@@ -33,6 +33,14 @@ export default function StatCard({ title, value, icon: Icon, trend, trendLabel, 
             >
               {value}
             </p>
+            {subtitle && (
+              <p 
+                className="text-xs mt-1"
+                style={{ color: 'var(--text-muted)' }}
+              >
+                {subtitle}
+              </p>
+            )}
           </div>
           {Icon && (
             <div className={`flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center ${iconBgClasses[color] || iconBgClasses.primary}`}>
