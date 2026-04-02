@@ -57,16 +57,20 @@ export default function NotificationsModal({ isOpen, onClose }) {
   if (!isOpen) return null;
 
   return (
-    <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto"
-      style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
-      onClick={onClose}
-    >
+    <>
+      {/* Overlay */}
       <div 
-        className="w-full max-w-sm rounded-2xl shadow-2xl flex flex-col"
+        className="fixed inset-0 z-40"
+        style={{ backgroundColor: 'transparent' }}
+        onClick={onClose}
+      />
+      
+      {/* Dropdown Modal */}
+      <div 
+        className="absolute right-4 top-16 w-96 max-w-[calc(100vw-2rem)] rounded-2xl shadow-2xl flex flex-col z-50"
         style={{ 
           backgroundColor: 'var(--bg-surface)',
-          maxHeight: '90vh',
+          maxHeight: 'calc(100vh - 100px)',
         }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -198,6 +202,6 @@ export default function NotificationsModal({ isOpen, onClose }) {
           </div>
         )}
       </div>
-    </div>
+    </>
   );
 }

@@ -1,405 +1,513 @@
-# Project Structure & Documentation Guide
+# 📁 Project Structure - FinTrack
 
-## 📁 Complete File Hierarchy
+Complete directory structure and file organization for the FinTrack financial management application.
+
+---
+
+## 📊 Root Directory
 
 ```
 webapp/
-├── 📄 API_DOCUMENTATION.md          ← Full API reference
-├── 📄 API_QUICK_REFERENCE.md        ← Quick lookup table
-├── 📄 IMPLEMENTATION_GUIDE.md        ← How to use API in components
-├── 📄 TROUBLESHOOTING.md            ← Common issues & solutions
-├── 📄 README.md                      ← Project overview
+├── src/                          # Source code directory
+├── public/                       # Static assets
+├── dist/                         # Production build output
+├── node_modules/                 # Dependencies
+├── package.json                  # Project metadata & scripts
+├── vite.config.js               # Vite configuration
+├── eslint.config.js             # ESLint rules
+├── ecosystem.config.cjs          # PM2 deployment config
+├── index.html                   # HTML entry point
 │
-├── src/
-│   ├── 📁 services/                  ← API layer
-│   │   ├── api.js                    ← Mock API implementation (400+ lines)
-│   │   └── index.js                  ← Service exports & configuration
-│   │
-│   ├── 📁 hooks/                     ← Custom hooks (NEW)
-│   │   ├── useApi.js                 ← useTransactions, useAnalytics hooks
-│   │   └── index.js                  ← Hook exports
-│   │
-│   ├── 📁 store/
-│   │   └── useStore.js               ← Zustand store with API integration
-│   │
-│   ├── 📁 components/
-│   │   ├── 📁 ui/                    ← Reusable UI components
-│   │   ├── 📁 Layout/                ← Layout components
-│   │   ├── 📁 Dashboard/             ← Dashboard components
-│   │   ├── 📁 Transactions/          ← Transaction components
-│   │   ├── 📁 Modal/                 ← Modal components
-│   │   ├── App.jsx                   ← Main app component
-│   │   └── index.js                  ← Component exports
-│   │
-│   ├── 📁 pages/
-│   │   ├── Dashboard.jsx             ← Dashboard page
-│   │   ├── Transactions.jsx          ← Transactions page
-│   │   └── Settings.jsx              ← Settings page
-│   │
-│   ├── 📁 data/
-│   │   └── mockData.js               ← Initial mock data
-│   │
-│   ├── 📁 utils/
-│   │   ├── csvExport.js              ← CSV export utility
-│   │   └── theme.js                  ← Theme utilities
-│   │
-│   ├── 📁 assets/                    ← Images, icons
-│   ├── index.css                     ← Global CSS with variables
-│   └── main.jsx                      ← React entry point
-│
-├── package.json                      ← Dependencies
-├── vite.config.js                    ← Vite configuration
-└── index.html                        ← HTML entry point
+├── 📚 Documentation:
+├── README.md                    # Main documentation
+├── PROJECT_STRUCTURE.md         # This file
+├── API_DOCUMENTATION.md         # API reference
+├── API_QUICK_REFERENCE.md       # Quick API lookup
+├── IMPLEMENTATION_GUIDE.md      # Integration & setup guide
+├── IMPLEMENTATION_SUMMARY.md    # Technical overview
+├── INTEGRATION_CHECKLIST.md     # Feature status
+└── TROUBLESHOOTING.md          # Common issues & solutions
 ```
 
 ---
 
-## 📚 Documentation Files
+## 📂 Source Code Structure
 
-### 1. **API_DOCUMENTATION.md**
-Comprehensive API reference with full endpoint details.
+### `src/` - Application Code
 
-**Sections:**
-- Overview & Features
-- Base Configuration
-- All Transaction API endpoints
-- Analytics API endpoints
-- Utility API endpoints
-- Integration examples
-- Error handling patterns
-- Best practices
-
-**Use When:** You need detailed information about specific endpoints
-
----
-
-### 2. **API_QUICK_REFERENCE.md**
-Quick lookup table and summary reference.
-
-**Sections:**
-- Service locations
-- API overview table
-- Store methods
-- Custom hooks summary
-- Common patterns
-- Filter options
-- Response formats
-- Example complete flow
-- Debugging shortcuts
-
-**Use When:** You need a quick lookup or reminder about API structure
-
----
-
-### 3. **IMPLEMENTATION_GUIDE.md**
-Step-by-step guide for implementing API in components.
-
-**Sections:**
-- Quick start (5 steps)
-- Using transactions in components (2 methods)
-- CRUD operation examples
-- Using analytics
-- Filtering and searching
-- Pagination implementation
-- Complete example (Transactions page)
-- Error handling best practices
-- Debugging tips
-
-**Use When:** You're implementing features and need practical examples
-
----
-
-### 4. **TROUBLESHOOTING.md**
-Solutions for common problems and issues.
-
-**Sections:**
-- API call hangs
-- response.success undefined
-- Data not updating
-- Transaction IDs invalid
-- Filters not working
-- Analytics/Dashboard issues
-- Performance problems
-- Batch delete issues
-- Export not working
-- Debugging checklist
-- How to enable logging
-
-**Use When:** Something is broken or not working as expected
-
----
-
-## 🔧 Key Files
-
-### src/services/api.js
-**Purpose:** Mock API service implementation
-
-**Key Functions (13 total):**
-- `getTransactions(filters)` - Fetch with filtering/pagination/sorting
-- `getTransactionById(id)` - Fetch single transaction
-- `createTransaction(data)` - Create with validation
-- `updateTransaction(id, data)` - Update existing
-- `deleteTransaction(id)` - Delete single
-- `deleteTransactions(ids)` - Batch delete
-- `getAnalytics()` - Dashboard stats
-- `getMonthlyTrend()` - Monthly data for charts
-- `getTransactionsByCategory()` - Category breakdown
-- `getDatabaseStats()` - Database info
-- `resetDatabase()` - Reset to initial data
-- `exportTransactionsJSON(filters)` - Export functionality
-
-**Features:**
-- 500ms network delay simulation
-- In-memory database
-- Comprehensive error handling
-- Validation on create operations
-- Response standardization: `{ success, data, error, timestamp }`
-
----
-
-### src/services/index.js
-**Purpose:** Service configuration and exports
-
-**Exports:** All api.js functions
-
-**Configuration:**
-```javascript
-const apiClient = {
-  baseURL: 'http://localhost:3000/api',
-  timeout: 30000,
-  retryAttempts: 3
-}
+```
+src/
+├── App.jsx                      # Root component
+├── main.jsx                     # Entry point
+├── index.css                    # Global styles
+├── appRouter.jsx                # Route configuration
+│
+├── pages/                       # Page components
+│   ├── Dashboard.jsx            # Analytics dashboard
+│   ├── Transactions.jsx         # Transaction management
+│   └── Settings.jsx             # User settings & profile
+│
+├── components/                  # Reusable components
+│   ├── Layout/
+│   │   ├── index.js            # Exports
+│   │   ├── Layout.jsx          # Main wrapper
+│   │   ├── Topbar.jsx          # Header with notifications
+│   │   └── Sidebar.jsx         # Navigation sidebar
+│   │
+│   ├── Dashboard/              # Analytics components
+│   │   ├── index.js            # Exports
+│   │   ├── ChartContainer.jsx  # Chart wrapper
+│   │   ├── StatCard.jsx        # Stats display
+│   │   └── SkeletonLoader.jsx  # Loading skeleton
+│   │
+│   ├── Transactions/           # Transaction UI components
+│   │   ├── index.js            # Exports
+│   │   ├── TransactionSearch.jsx   # Search input
+│   │   ├── TransactionFilter.jsx   # Filter controls
+│   │   ├── TransactionTable.jsx    # Data table
+│   │   └── TransactionPagination.jsx # Pagination
+│   │
+│   ├── Modal/                  # Dialog components
+│   │   ├── CreateModal.jsx     # Create transaction
+│   │   ├── EditModal.jsx       # Edit transaction
+│   │   ├── DeleteModal.jsx     # Delete confirmation
+│   │   ├── EditProfileModal.jsx # Profile editing
+│   │   └── NotificationsModal.jsx # Notifications
+│   │
+│   ├── ui/                     # Base UI components
+│   │   ├── index.js            # Exports
+│   │   ├── Button.jsx          # Button component
+│   │   ├── Input.jsx           # Text input
+│   │   ├── Select.jsx          # Dropdown selector
+│   │   ├── Table.jsx           # Table structure
+│   │   └── Badge.jsx           # Status badge
+│   │
+│   ├── RoleGuard.jsx           # RBAC wrapper
+│   └── Toast.jsx               # Notifications
+│
+├── store/                      # State management
+│   └── useStore.js            # Zustand store
+│
+├── hooks/                      # Custom React hooks
+│   ├── index.js               # Exports
+│   └── useApi.js              # API integration hook
+│
+├── services/                  # API services
+│   ├── index.js              # Exports
+│   └── api.js                # Mock API implementation
+│
+├── utils/                     # Utility functions
+│   ├── theme.js              # Theme management
+│   ├── csvExport.js          # CSV export utilities
+│   └── countriesAPI.js       # Countries data
+│
+├── data/                      # Mock data
+│   └── mockData.js           # Transactions & categories
+│
+└── assets/                    # Resource files
 ```
 
 ---
 
-### src/store/useStore.js
-**Purpose:** Zustand state management with API integration
-
-**State Properties:**
-- `transactions` - Array of transactions
-- `isTransactionLoading` - Loading state
-- `transactionError` - Error message
-- `analytics` - Dashboard analytics object
-- `monthlyTrend` - Monthly trend data
-- Many more theme/UI states
-
-**Methods:**
-- `initializeTransactions()` - Load initial data
-- `fetchTransactions(filters)` - Fetch with filters
-- `addTransaction(data)` - Create and update state
-- `updateTransaction(id, data)` - Update and refresh state
-- `deleteTransaction(id)` - Delete and refresh state
-- `fetchAnalytics()` - Load dashboard data
-- `fetchMonthlyTrend()` - Load trend data
-- Error management: `setTransactionError()`, `setAnalyticsError()`, etc.
-
----
-
-### src/hooks/useApi.js
-**Purpose:** Custom hooks for simplified component usage
-
-**Hooks Provided:**
-1. **useTransactions()** - Transaction management
-   - Returns: transactions, isLoading, error, CRUD methods
-   
-2. **useAnalytics()** - Analytics data management
-   - Returns: analytics, monthlyTrend, loading states, fetch methods
-   
-3. **useApiNotification()** - Notification system
-   - Returns: showError, showSuccess (TODO: integrate with toast)
-
----
-
-## 🚀 Quick Start Routes
-
-### I want to...
-
-#### Create a new page that shows transactions
-1. Read: `IMPLEMENTATION_GUIDE.md` → "Complete Example: Transactions Page"
-2. Copy the example code
-3. Adapt the components to your design
-4. Use `useTransactions()` hook from `src/hooks/useApi.js`
-
-#### Fix a bug or error
-1. Read: `TROUBLESHOOTING.md` → Find matching issue
-2. Apply the solution
-3. Test using debugging checklist
-
-#### Understand how filtering works
-1. Read: `API_QUICK_REFERENCE.md` → "Filter Options"
-2. Read: `IMPLEMENTATION_GUIDE.md` → "Filtering and Searching"
-3. See `API_DOCUMENTATION.md` → "GET - Fetch All Transactions"
-
-#### Add pagination to a page
-1. Read: `IMPLEMENTATION_GUIDE.md` → "Step 6: Pagination"
-2. Copy the pagination component example
-3. Update your fetch calls with `skip` and `limit`
-
-#### Debug why API calls aren't working
-1. Read: `TROUBLESHOOTING.md` → "Debugging Checklist"
-2. Use console logging from that section
-3. Check browser DevTools and store state
-
-#### Learn about analytics/dashboard
-1. Read: `IMPLEMENTATION_GUIDE.md` → "Step 4: Using Analytics"
-2. See `API_QUICK_REFERENCE.md` → "Analytics Methods"
-3. View `IMPLEMENTATION_GUIDE.md` → "Complete Example"
-
-#### Switch to real backend later
-1. Read: `API_QUICK_REFERENCE.md` → "Future: Real Backend Integration"
-2. Follow the pattern to update `src/services/api.js`
-3. Keep response format identical for drop-in compatibility
-
----
-
-## 📋 Integration Checklist
-
-- [ ] Read `API_QUICK_REFERENCE.md` for overview
-- [ ] Read `IMPLEMENTATION_GUIDE.md` steps 1-2
-- [ ] Update `App.jsx` with `initializeTransactions()`
-- [ ] Update `Dashboard.jsx` to use `loadAnalytics()` and `loadTrend()`
-- [ ] Update `Transactions.jsx` to use `useTransactions()` hook
-- [ ] Add loading states when `isLoading` is true
-- [ ] Add error displays when `error` is not null
-- [ ] Test each CRUD operation (Create, Read, Update, Delete)
-- [ ] Test filters and search
-- [ ] Test pagination if needed
-- [ ] Review `TROUBLESHOOTING.md` for common issues
-- [ ] Add toast notifications for user feedback
-
----
-
-## 🔍 Finding Things
-
-### "How do I..."
-
-| Task | Document | Section |
-|------|----------|---------|
-| Get started quickly | API_QUICK_REFERENCE.md | Quick API Overview |
-| Create a transaction | IMPLEMENTATION_GUIDE.md | "Create Transaction" |
-| Fetch with filters | IMPLEMENTATION_GUIDE.md | "Step 5: Filtering and Searching" |
-| Show loading state | IMPLEMENTATION_GUIDE.md | "Complete Example" |
-| Handle errors | IMPLEMENTATION_GUIDE.md | "Error Handling Best Practices" |
-| Debug an issue | TROUBLESHOOTING.md | Find matching symptom |
-| Use analytics | IMPLEMENTATION_GUIDE.md | "Step 4: Using Analytics" |
-| Do pagination | IMPLEMENTATION_GUIDE.md | "Step 6: Pagination" |
-| Export data | IMPLEMENTATION_GUIDE.md | See CSV export notes |
-| Understand hooks | API_QUICK_REFERENCE.md | "Custom Hooks (Recommended)" |
-| See all API endpoints | API_DOCUMENTATION.md | Full endpoint list |
-| Reset database | IMPLEMENTATION_GUIDE.md | See database reset notes |
-| Switch to real API | API_QUICK_REFERENCE.md | "Future: Real Backend Integration" |
-
----
-
-## 📊 Architecture Overview
+## 🔄 Data Flow Architecture
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│              React Components                        │
-│     (Dashboard, Transactions, Settings)             │
+│               User Interaction                       │
+│           (Click, Scroll, Type, etc)                │
 └────────────────────┬────────────────────────────────┘
                      │
-┌────────────────────▼────────────────────────────────┐
-│           Custom Hooks (useApi.js)                  │
-│  (useTransactions, useAnalytics)                    │
+                     ▼
+┌─────────────────────────────────────────────────────┐
+│            React Components                         │
+│    (Pages, Modal, Tables, Inputs)                  │
 └────────────────────┬────────────────────────────────┘
                      │
-┌────────────────────▼────────────────────────────────┐
-│         Zustand Store (useStore.js)                 │
-│  State Management + Async Methods                   │
+                     ▼
+┌─────────────────────────────────────────────────────┐
+│          useStore (Zustand)                        │
+│      Central State Management                      │
+├─────────────────────────────────────────────────────┤
+│ • Transactions                                      │
+│ • Theme, Role, Notifications                       │
+│ • UI State (modals, pages)                         │
 └────────────────────┬────────────────────────────────┘
                      │
-┌────────────────────▼────────────────────────────────┐
-│      Mock API Service (services/api.js)             │
-│  CRUD, Analytics, Utilities                         │
-│  (500ms delay simulation)                           │
+                     ▼
+┌─────────────────────────────────────────────────────┐
+│          API Services (services/api.js)            │
+│       Mock API with Network Simulation             │
+├─────────────────────────────────────────────────────┤
+│ • getTransactions()                                 │
+│ • createTransaction()                               │
+│ • updateTransaction()                               │
+│ • deleteTransaction()                               │
+│ • getAnalytics()                                    │
+│ • getMonthlyTrend()                                │
 └────────────────────┬────────────────────────────────┘
                      │
-┌────────────────────▼────────────────────────────────┐
-│      In-Memory Database (transactionsDb)            │
-│      Mock Data (transactions)                       │
+                     ▼
+┌─────────────────────────────────────────────────────┐
+│          Mock Data (in-memory storage)             │
+│    Transactions, Categories, Merchants              │
 └─────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 💡 Best Practices
-
-1. **Always use custom hooks** - Prefer `useTransactions()` over direct store access
-2. **Check response.success first** - Always validate before accessing data
-3. **Handle loading states** - Show spinners when `isLoading` is true
-4. **Display errors** - Show error messages to users when API fails
-5. **Debounce search** - Prevent too many API calls during typing
-6. **Paginate large datasets** - Don't load thousands of items at once
-7. **Try-catch for safety** - Wrap API calls in error handling
-8. **Use filters efficiently** - Reduce data fetched with appropriate filters
-9. **Test components** - Verify CRUD operations work correctly
-10. **Future-proof design** - Response format works with real backend too
-
----
-
-## 📖 Documentation Reading Order
-
-**For New Users:**
-1. API_QUICK_REFERENCE.md (overview)
-2. IMPLEMENTATION_GUIDE.md Steps 1-3 (basics)
-3. Complete one task using the guide
-
-**For Implementing Features:**
-1. IMPLEMENTATION_GUIDE.md (find matching section)
-2. Copy example code
-3. Reference API_DOCUMENTATION.md if needed
-
-**For Fixing Issues:**
-1. TROUBLESHOOTING.md (find matching symptom)
-2. Apply solution
-3. Use debugging checklist to verify fix
-
----
-
-## ✅ Success Indicators
-
-Your implementation is successful when:
-
-- [ ] ✅ App loads without errors
-- [ ] ✅ Transactions display on load
-- [ ] ✅ Can create new transactions
-- [ ] ✅ Can edit transactions
-- [ ] ✅ Can delete transactions
-- [ ] ✅ Filters work correctly
-- [ ] ✅ Search narrows results
-- [ ] ✅ Dashboard shows analytics
-- [ ] ✅ Charts display trend data
-- [ ] ✅ Loading states show during API calls
-- [ ] ✅ Error messages display when API fails
-- [ ] ✅ No console errors
-- [ ] ✅ Responsive design works
-
----
-
-## 🔗 File Relationships
+## 📋 Component Hierarchy
 
 ```
-IMPLEMENTATION_GUIDE.md
-    ↓
-    └─→ IMPLEMENTATION_GUIDE Step 3
-        ↓
-        └─→ Import { useTransactions } from '@/hooks'
-            ↓
-            └─→ src/hooks/useApi.js
-                ↓
-                └─→ Import from '@/store/useStore'
-                    ↓
-                    └─→ src/store/useStore.js
-                        ↓
-                        └─→ Import from '@/services/api'
-                            ↓
-                            └─→ src/services/api.js (where the magic happens!)
+App
+└── Layout
+    ├── Topbar
+    │   ├── Role Switcher (Dropdown)
+    │   ├── Theme Toggle
+    │   ├── Notifications Button → NotificationsModal
+    │   └── Profile Menu → EditProfileModal
+    │
+    ├── Sidebar
+    │   ├── Navigation Links
+    │   └── User Card
+    │
+    └── Content Area (AppContent)
+        ├── Dashboard Page
+        │   ├── StatCard (×4)
+        │   └── ChartContainer (×2)
+        │
+        ├── Transactions Page
+        │   ├── Header (with export & add buttons)
+        │   ├── TransactionSearch
+        │   ├── TransactionFilter
+        │   ├── Advanced Filters
+        │   ├── Active Filters Display
+        │   ├── TransactionTable
+        │   │   └── Modal: CreateModal, EditModal, DeleteModal
+        │   └── TransactionPagination
+        │
+        └── Settings Page
+            ├── Profile Information Card
+            ├── Appearance Card
+            ├── Notifications Card
+            └── Security & Access Card
 ```
 
 ---
 
-**Last Updated:** 2026-04-02  
-**API Version:** 1.0 (Mock)  
-**Status:** Ready for integration into components
+## 🗂️ File Purposes
+
+### Pages
+
+| File | Purpose |
+|------|---------|
+| `Dashboard.jsx` | Analytics dashboard with stats and charts |
+| `Transactions.jsx` | Main transaction management interface |
+| `Settings.jsx` | User profile and preference settings |
+
+### Layout Components
+
+| File | Purpose |
+|------|---------|
+| `Layout.jsx` | Main layout wrapper with sidebar & topbar |
+| `Topbar.jsx` | Header with controls and notifications |
+| `Sidebar.jsx` | Navigation menu and user info |
+
+### Transaction Components
+
+| File | Purpose |
+|------|---------|
+| `TransactionSearch.jsx` | Search input field |
+| `TransactionFilter.jsx` | Dropdown filters |
+| `TransactionTable.jsx` | Data table display |
+| `TransactionPagination.jsx` | Pagination controls |
+
+### Modal Components
+
+| File | Purpose |
+|------|---------|
+| `CreateModal.jsx` | Add new transaction form |
+| `EditModal.jsx` | Edit transaction form |
+| `DeleteModal.jsx` | Delete confirmation dialog |
+| `EditProfileModal.jsx` | Profile editing form |
+| `NotificationsModal.jsx` | Notifications and alerts |
+
+### UI Components
+
+| File | Purpose |
+|------|---------|
+| `Button.jsx` | Reusable button component |
+| `Input.jsx` | Form input fields |
+| `Select.jsx` | Dropdown selector |
+| `Table.jsx` | Table structure elements |
+| `Badge.jsx` | Status/category badges |
+
+### Store & State
+
+| File | Purpose |
+|------|---------|
+| `useStore.js` | Zustand store with all app state |
+
+### Services & API
+
+| File | Purpose |
+|------|---------|
+| `api.js` | Mock API endpoints |
+
+### Utilities
+
+| File | Purpose |
+|------|---------|
+| `theme.js` | Theme color management |
+| `csvExport.js` | CSV export utilities |
+| `countriesAPI.js` | Country/currency data |
+
+### Data
+
+| File | Purpose |
+|------|---------|
+| `mockData.js` | Transaction & category mock data |
+
+---
+
+## 🎯 State Management Structure
+
+### Store Properties
+
+```javascript
+{
+  // Role-based access
+  role: 'admin' | 'viewer',
+  setRole: (role) => void,
+  toggleRole: () => void,
+
+  // Theme management
+  theme: 'light' | 'dark',
+  setTheme: (theme) => void,
+  toggleTheme: () => void,
+  initTheme: () => void,
+
+  // Transaction data
+  transactions: Array<Transaction>,
+  isTransactionLoading: boolean,
+  transactionError: string | null,
+
+  // Transaction operations
+  initializeTransactions: async () => void,
+  fetchTransactions: async (filters) => void,
+  addTransaction: (data) => void,
+  updateTransaction: (id, data) => void,
+  deleteTransaction: (id) => void,
+
+  // UI state
+  isLoading: boolean,
+  setIsLoading: (loading) => void,
+  activePage: 'dashboard' | 'transactions' | 'settings',
+  setActivePage: (page) => void,
+
+  // Search
+  globalSearch: string,
+  setGlobalSearch: (term) => void,
+
+  // Notifications
+  notifications: Array<Notification>,
+  addNotification: (notification) => void,
+  markNotificationRead: (id) => void,
+  clearNotifications: () => void,
+
+  // Profile
+  profile: UserProfile,
+  updateProfile: (data) => void,
+
+  // Analytics
+  analytics: Analytics,
+  fetchAnalytics: async () => void,
+  monthlyTrend: Array<TrendData>,
+  fetchMonthlyTrend: async () => void,
+}
+```
+
+---
+
+## 🔌 API Integration Points
+
+All API calls are in `services/api.js` and use Zustand store for state:
+
+```javascript
+// Transactions
+- getTransactions(filters)     // Fetch with filters/sorting
+- createTransaction(data)      // Add new
+- updateTransaction(id, data)  // Edit
+- deleteTransaction(id)        // Delete
+
+// Analytics
+- getAnalytics()               // Summary stats
+- getMonthlyTrend()            // Trend data
+```
+
+---
+
+## 🎨 Component Relationships
+
+### Transactions Page
+
+```
+TransactionSearch ─┐
+TransactionFilter ─┼─→ Zustand Store
+Advanced Filters ──┤
+                   └─→ TransactionTable
+                       ├─→ CreateModal
+                       ├─→ EditModal
+                       └─→ DeleteModal
+                   ├─→ TransactionPagination
+                   └─→ Export CSV
+```
+
+### Settings Page
+
+```
+EditProfileModal ──→ Zustand (Profile)
+Appearance Card ────→ Zustand (Theme)
+Notifications Card──→ Zustand (Notifications)
+Security Card ──────→ Zustand (Role)
+```
+
+---
+
+## 📦 Dependencies & Versions
+
+| Package | Version | Purpose |
+|---------|---------|---------|
+| React | 19.2.4 | UI framework |
+| Vite | 8.0.1 | Build tool |
+| Zustand | 5.0.12 | State management |
+| Tailwind CSS | 4.2.2 | Styling |
+| HeroUI | 3.0.1 | Component library |
+| Lucide Icons | 1.7.0 | Icons |
+| Recharts | 3.8.1 | Charts |
+| Framer Motion | 12.38.0 | Animations |
+
+---
+
+## 🚀 Build Output
+
+```
+dist/
+├── index.html              # Main HTML file
+├── assets/
+│   ├── index-[hash].js     # Bundled JavaScript
+│   ├── index-[hash].css    # Compiled CSS
+│   └── [other static files]
+└── [other assets]
+```
+
+---
+
+## 🔄 File Import/Export Examples
+
+### Importing Store
+
+```javascript
+import useStore from '@/store/useStore';
+
+// Usage
+const transactions = useStore((s) => s.transactions);
+const setRole = useStore((s) => s.setRole);
+```
+
+### Importing Components
+
+```javascript
+import { Button, Input, Select, Badge } from '@/components/ui';
+import { TransactionTable, TransactionFilter } from '@/components/Transactions';
+```
+
+### Importing Utils
+
+```javascript
+import { exportToCSV } from '@/utils/csvExport';
+import { categories } from '@/data/mockData';
+```
+
+---
+
+## 📊 Database-like Structure
+
+### Transactions Collection
+
+```javascript
+{
+  id: number,
+  date: string (YYYY-MM-DD),
+  description: string,
+  amount: number,
+  category: string,
+  type: 'Income' | 'Expense',
+  merchant: string,
+  status: 'Completed' | 'Pending',
+  createdAt: timestamp,
+  updatedAt: timestamp,
+}
+```
+
+### User Profile Collection
+
+```javascript
+{
+  fullName: string,
+  email: string,
+  phone: string,
+  country: string,
+  state: string (optional),
+  currency: string,
+  dialCode: string,
+  avatarUrl: string (optional),
+}
+```
+
+### Analytics Collection
+
+```javascript
+{
+  totalBalance: number,
+  totalIncome: number,
+  totalExpenses: number,
+  incomeCount: number,
+  expenseCount: number,
+  balanceChange: number,
+}
+```
+
+---
+
+## 🔐 File Permissions (Conceptual)
+
+```
+Public Access (no auth):
+├── styles (CSS)
+├── UI components
+└── Static assets
+
+Role-Protected:
+├── Create Transaction (Admin)
+├── Edit Transaction (Admin)
+├── Delete Transaction (Admin)
+├── View All (Everyone)
+└── Export (Everyone)
+
+Private (Authenticated):
+└── All user-specific data
+```
+
+---
+
+## 📱 Asset Files
+
+```
+public/
+├── favicon.ico              # Site icon
+└── [custom assets if any]
+```
+
+---
+
+**Last Updated:** April 2, 2026 | **Version:** 1.0

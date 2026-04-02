@@ -1,470 +1,525 @@
-# Implementation Guide: Using Mock API
+# 📖 Implementation Guide - FinTrack
 
-## Quick Start
-
-This guide shows you how to integrate the mock API into your components.
+Step-by-step guide to implement features and integrate FinTrack components.
 
 ---
 
-## Step 1: Initialize App
+## 🚀 Getting Started
 
-Update `src/App.jsx` to load initial data:
+### 1. Project Setup
 
-```javascript
-import { useEffect } from 'react';
-import useStore from './store/useStore';
-import { Layout } from './components/Layout';
+```bash
+# Clone repository
+git clone <url>
+cd webapp
 
-export default function App() {
-  const { initializeTransactions } = useStore();
+# Install dependencies
+npm install
 
-  // Load initial data on mount
-  useEffect(() => {
-    initializeTransactions();
-  }, [initializeTransactions]);
+# Start development server
+npm run dev
 
-  return <Layout />;
-}
+# Build for production
+npm run build
 ```
 
+The app will be available at `http://localhost:3000/`
+
 ---
 
-## Step 2: Using Transactions in Components
+## 🏗️ Using Transactions
 
-### Method 1: Using the Custom Hook (Recommended)
+### Step 1: Access Store
 
 ```javascript
-import { useEffect } from 'react';
-import { useTransactions } from '@/hooks';
+import useStore from '@/store/useStore';
 
-export default function TransactionsList() {
-  const { transactions, isLoading, error, fetch } = useTransactions();
-
-  // Fetch on mount
-  useEffect(() => {
-    fetch({ type: 'All', limit: 10 });
-  }, [fetch]);
-
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
-
+export default function MyComponent() {
+  const transactions = useStore((s) => s.transactions);
+  const addTransaction = useStore((s) => s.addTransaction);
+  
   return (
     <div>
-      {transactions.map(tx => (
-        <div key={tx.id}>{tx.description}</div>
-      ))}
+      {/* Component code */}
     </div>
   );
 }
 ```
 
-### Method 2: Direct Store Access
+### Step 2: Fetch Transactions
 
 ```javascript
 import { useEffect } from 'react';
 import useStore from '@/store/useStore';
 
-export default function TransactionsList() {
-  const {
-    transactions,
-    isTransactionLoading,
-    transactionError,
-    fetchTransactions,
-  } = useStore();
+export default function TransactionList() {
+  const transactions = useStore((s) => s.transactions);
+  const fetchTransactions = useStore((s) => s.fetchTransactions);
 
   useEffect(() => {
-    fetchTransactions({ type: 'All' });
+    fetchTransactions({
+      type: 'All',
+      limit: 20
+    });
   }, [fetchTransactions]);
-
-  if (isTransactionLoading) return <div>Loading...</div>;
-  if (transactionError) return <div>Error: {transactionError}</div>;
 
   return (
     <div>
       {transactions.map(tx => (
-        <div key={tx.id}>{tx.description}</div>
+        <div key={tx.id}>{tx.description} - ${tx.amount}</div>
       ))}
     </div>
   );
 }
 ```
 
----
-
-## Step 3: Handling CRUD Operations
-
-### Create Transaction
+### Step 3: Create Transaction
 
 ```javascript
-import { useTransactions } from '@/hooks';
-
-export default function CreateTransactionForm() {
-  const { create, isLoading } = useTransactions();
-
-  const handleSubmit = async (formData) => {
-    const response = await create({
+const handleCreate = async (formData) => {
+  const createTransaction = useStore((s) => s.addTransaction);
+  
+  try {
+    createTransaction({
       date: formData.date,
-      type: 'Expense',
       description: formData.description,
       amount: parseFloat(formData.amount),
       category: formData.category,
-      merchant: formData.merchant || '',
-      status: 'Completed',
+      type: formData.type,
+      merchant: formData.merchant,
+      status: 'Completed'
     });
-
-    if (response.success) {
-      console.log('Transaction created:', response.data.transaction);
-      // Close modal, refresh list, show success message
-    } else {
-      console.error('Failed:', response.error);
-      // Show error message
-    }
-  };
-
-  return (
-    <form onSubmit={(e) => {
-      e.preventDefault();
-      handleSubmit(Object.fromEntries(new FormData(e.target)));
-    }}>
-      {/* form fields */}
-      <button disabled={isLoading}>
-        {isLoading ? 'Creating...' : 'Create'}
-      </button>
-    </form>
-  );
-}
-```
-
-### Update Transaction
-
-```javascript
-const handleUpdate = async (id, updates) => {
-  const response = await update(id, updates);
-  
-  if (response.success) {
-    console.log('Updated:', response.data.transaction);
-  } else {
-    console.error('Error:', response.error.message);
-  }
-};
-```
-
-### Delete Transaction
-
-```javascript
-const handleDelete = async (id) => {
-  const response = await delete_(id);
-  
-  if (response.success) {
-    console.log('Deleted successfully');
-  } else {
-    console.error('Error:', response.error.message);
-  }
-};
-```
-
----
-
-## Step 4: Using Analytics
-
-```javascript
-import { useEffect } from 'react';
-import { useAnalytics } from '@/hooks';
-
-export default function Dashboard() {
-  const {
-    analytics,
-    monthlyTrend,
-    analyticsLoading,
-    analyticsError,
-    loadAnalytics,
-    loadTrend,
-  } = useAnalytics();
-
-  useEffect(() => {
-    loadAnalytics();
-    loadTrend();
-  }, [loadAnalytics, loadTrend]);
-
-  if (analyticsLoading) return <div>Loading analytics...</div>;
-  if (analyticsError) return <div>Error: {analyticsError}</div>;
-
-  return (
-    <div>
-      <div>Total Income: ${analytics?.totalIncome}</div>
-      <div>Total Expense: ${analytics?.totalExpense}</div>
-      <div>Balance: ${analytics?.balance}</div>
-    </div>
-  );
-}
-```
-
----
-
-## Step 5: Filtering and Searching
-
-```javascript
-import { useState, useEffect } from 'react';
-import { useTransactions } from '@/hooks';
-
-export default function FilteredTransactions() {
-  const { transactions, fetch, isLoading } = useTransactions();
-  const [filters, setFilters] = useState({
-    type: 'All',
-    category: '',
-    search: '',
-    sortBy: 'date',
-    sortOrder: 'desc',
-  });
-
-  // Fetch when filters change
-  useEffect(() => {
-    fetch(filters);
-  }, [filters, fetch]);
-
-  const handleFilterChange = (name, value) => {
-    setFilters(prev => ({ ...prev, [name]: value }));
-  };
-
-  return (
-    <div>
-      <input
-        placeholder="Search..."
-        onChange={(e) => handleFilterChange('search', e.target.value)}
-      />
-      <select onChange={(e) => handleFilterChange('type', e.target.value)}>
-        <option value="All">All</option>
-        <option value="Income">Income</option>
-        <option value="Expense">Expense</option>
-      </select>
-
-      {isLoading ? (
-        <div>Loading...</div>
-      ) : (
-        <div>
-          {transactions.map(tx => (
-            <div key={tx.id}>{tx.description}</div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-```
-
----
-
-## Step 6: Pagination
-
-```javascript
-import { useState, useEffect } from 'react';
-import { useTransactions } from '@/hooks';
-
-export default function PaginatedTransactions() {
-  const { fetch, isLoading } = useTransactions();
-  const [page, setPage] = useState(1);
-  const pageSize = 10;
-
-  useEffect(() => {
-    fetch({
-      skip: (page - 1) * pageSize,
-      limit: pageSize,
-    });
-  }, [page, fetch]);
-
-  return (
-    <div>
-      {isLoading && <div>Loading...</div>}
-      
-      <div>
-        <button onClick={() => setPage(p => Math.max(1, p - 1))}>
-          Previous
-        </button>
-        <span>Page {page}</span>
-        <button onClick={() => setPage(p => p + 1)}>Next</button>
-      </div>
-    </div>
-  );
-}
-```
-
----
-
-## Complete Example: Transactions Page
-
-```javascript
-import { useEffect, useState } from 'react';
-import { useTransactions } from '@/hooks';
-import { Button } from '@/components/ui';
-
-export default function TransactionsPage() {
-  const {
-    transactions,
-    isLoading,
-    error,
-    fetch,
-    create,
-    update,
-    delete: deleteTransaction,
-  } = useTransactions();
-
-  const [filters, setFilters] = useState({
-    type: 'All',
-    search: '',
-  });
-
-  const [showCreateModal, setShowCreateModal] = useState(false);
-
-  // Fetch on mount and when filters change
-  useEffect(() => {
-    fetch({ ...filters, limit: 50 });
-  }, [filters, fetch]);
-
-  const handleCreate = async (formData) => {
-    const response = await create(formData);
-    if (response.success) {
-      setShowCreateModal(false);
-      // Show success toast
-    }
-  };
-
-  const handleUpdate = async (id, updates) => {
-    const response = await update(id, updates);
-    if (response.success) {
-      // Show success toast
-    }
-  };
-
-  const handleDelete = async (id) => {
-    const response = await deleteTransaction(id);
-    if (response.success) {
-      // Show success toast
-    }
-  };
-
-  return (
-    <div className="p-6 space-y-4">
-      <div className="flex justify-between items-center">
-        <h1>Transactions</h1>
-        <Button onClick={() => setShowCreateModal(true)}>
-          Add Transaction
-        </Button>
-      </div>
-
-      {/* Filters */}
-      <div className="flex gap-4">
-        <input
-          placeholder="Search..."
-          value={filters.search}
-          onChange={(e) =>
-            setFilters(prev => ({ ...prev, search: e.target.value }))
-          }
-        />
-        <select
-          value={filters.type}
-          onChange={(e) =>
-            setFilters(prev => ({ ...prev, type: e.target.value }))
-          }
-        >
-          <option value="All">All Types</option>
-          <option value="Income">Income</option>
-          <option value="Expense">Expense</option>
-        </select>
-      </div>
-
-      {/* Status */}
-      {isLoading && <div>Loading...</div>}
-      {error && <div className="text-red-500">{error}</div>}
-
-      {/* Results */}
-      <div className="space-y-2">
-        {transactions.map(tx => (
-          <div key={tx.id} className="flex justify-between p-4 border rounded">
-            <div>
-              <div>{tx.description}</div>
-              <div className="text-sm text-gray-500">{tx.category}</div>
-            </div>
-            <div className="flex gap-2 items-center">
-              <span>${tx.amount}</span>
-              <Button variant="secondary" onClick={() => handleUpdate(tx.id, {})}>
-                Edit
-              </Button>
-              <Button variant="danger" onClick={() => handleDelete(tx.id)}>
-                Delete
-              </Button>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Create Modal */}
-      {showCreateModal && (
-        <CreateTransactionModal
-          onCreate={handleCreate}
-          onClose={() => setShowCreateModal(false)}
-        />
-      )}
-    </div>
-  );
-}
-```
-
----
-
-## Error Handling Best Practices
-
-```javascript
-// Always check response.success
-const handleAction = async () => {
-  try {
-    const response = await create(data);
     
-    if (response.success) {
-      // Success case
-      toast.success('Created successfully');
-    } else {
-      // API error case
-      toast.error(response.error?.message || 'Unknown error');
-    }
+    // Success feedback
+    showNotification('✅ Transaction created');
   } catch (error) {
-    // Network or unexpected error
-    toast.error('An unexpected error occurred');
-    console.error(error);
+    showError('Failed to create transaction');
+  }
+};
+```
+
+### Step 4: Update Transaction
+
+```javascript
+const handleUpdate = (id, updates) => {
+  const updateTransaction = useStore((s) => s.updateTransaction);
+  
+  updateTransaction(id, {
+    description: updates.description,
+    amount: updates.amount,
+    // Only include fields that changed
+  });
+  
+  showNotification('✅ Transaction updated');
+};
+```
+
+### Step 5: Delete Transaction
+
+```javascript
+const handleDelete = (id) => {
+  if (window.confirm('Delete this transaction?')) {
+    const deleteTransaction = useStore((s) => s.deleteTransaction);
+    deleteTransaction(id);
+    showNotification('🗑️ Transaction deleted');
   }
 };
 ```
 
 ---
 
-## Debugging Tips
+## 🎨 Using Components
 
-### Check Loading States
+### TransactionSearch
+
 ```javascript
-console.log('isLoading:', isLoading);
-console.log('transactions:', transactions);
-console.log('error:', error);
+import { TransactionSearch } from '@/components/Transactions';
+
+export default function MyPage() {
+  const [search, setSearch] = useState('');
+
+  return (
+    <TransactionSearch
+      value={search}
+      onChange={(e) => setSearch(e.target.value)}
+    />
+  );
+}
 ```
 
-### Monitor API Calls
-Open browser DevTools console to see API simulation logs:
-```
-Network delay simulation: 500ms
+### TransactionFilter
+
+```javascript
+import { TransactionFilter } from '@/components/Transactions';
+
+export default function MyPage() {
+  const [typeFilter, setTypeFilter] = useState('All');
+  
+  return (
+    <TransactionFilter
+      typeFilter={typeFilter}
+      typeOptions={['All', 'Income', 'Expense']}
+      onTypeChange={setTypeFilter}
+      // ... other props
+    />
+  );
+}
 ```
 
-### Check Store State
+### TransactionTable
+
+```javascript
+import { TransactionTable } from '@/components/Transactions';
+
+export default function MyPage() {
+  const handleSort = (field) => {
+    setSortField(field);
+  };
+
+  return (
+    <TransactionTable
+      transactions={transactions}
+      sortField={sortField}
+      sortDirection={sortDirection}
+      onSort={handleSort}
+      onEdit={handleEdit}
+      onDelete={handleDelete}
+      formatCurrency={formatCurrency}
+      formatDate={formatDate}
+    />
+  );
+}
+```
+
+---
+
+## 🎯 Using Modals
+
+### Create Transaction Modal
+
+```javascript
+import { useState } from 'react';
+import CreateModal from '@/components/Modal/CreateModal';
+
+export default function MyPage() {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <>
+      <button onClick={() => setIsOpen(true)}>Add Transaction</button>
+      <CreateModal
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        onSubmit={handleSubmit}
+      />
+    </>
+  );
+}
+```
+
+### Edit Modal
+
+```javascript
+import EditModal from '@/components/Modal/EditModal';
+
+<EditModal
+  isOpen={isEditOpen}
+  initialData={selectedTransaction}
+  onClose={() => setIsEditOpen(false)}
+  onSubmit={handleUpdate}
+/>
+```
+
+### Delete Modal
+
+```javascript
+import DeleteModal from '@/components/Modal/DeleteModal';
+
+<DeleteModal
+  isOpen={isDeleteOpen}
+  title="Delete Transaction"
+  message="Are you sure you want to delete this transaction?"
+  onConfirm={handleConfirmDelete}
+  onCancel={() => setIsDeleteOpen(false)}
+/>
+```
+
+---
+
+## 🔐 Role-Based Access Control
+
+### Using RoleGuard
+
+```javascript
+import RoleGuard from '@/components/RoleGuard';
+
+export default function AdminPanel() {
+  return (
+    <RoleGuard requiredRole="admin">
+      <button>Delete All</button>
+      <button>Export Data</button>
+    </RoleGuard>
+  );
+}
+```
+
+### Checking Role in Logic
+
+```javascript
+const role = useStore((s) => s.role);
+
+if (role === 'viewer') {
+  // Hide edit/delete buttons
+  return <ViewOnlyComponent />;
+}
+
+return <FullAccessComponent />;
+```
+
+---
+
+## 🎨 Theming
+
+### Apply Theme
+
 ```javascript
 import useStore from '@/store/useStore';
 
-const state = useStore();
-console.log('Full store:', state);
+export default function App() {
+  const theme = useStore((s) => s.theme);
+  const toggleTheme = useStore((s) => s.toggleTheme);
+
+  return (
+    <button onClick={toggleTheme}>
+      {theme === 'dark' ? '☀️ Light' : '🌙 Dark'}
+    </button>
+  );
+}
+```
+
+### Using Theme Colors in CSS
+
+```javascript
+// Access theme variables in styled components
+const styles = {
+  backgroundColor: 'var(--bg-surface)',
+  color: 'var(--text-primary)',
+  borderColor: 'var(--border-subtle)',
+};
+
+return <div style={styles}>Themed content</div>;
 ```
 
 ---
 
-## Next Steps
+## 📊 Analytics
 
-1. **Example Components**: See updated Transactions.jsx and Dashboard.jsx for complete implementations
-2. **Toast Notifications**: Integrate your toast library into useApiNotification hook
-3. **Error Boundaries**: Add React error boundaries for better error handling
-4. **Loading UI**: Add spinners, skeletons, and loading states to improve UX
-5. **Real Backend**: When ready, replace API functions with real HTTP calls keeping the same response format
+### Fetch and Display
+
+```javascript
+import { useEffect, useState } from 'react';
+import { getAnalytics } from '@/services/api';
+
+export default function Dashboard() {
+  const [stats, setStats] = useState(null);
+
+  useEffect(() => {
+    getAnalytics().then(result => {
+      if (result.success) {
+        setStats(result.data);
+      }
+    });
+  }, []);
+
+  return (
+    <div>
+      <p>Balance: ${stats?.totalBalance}</p>
+      <p>Income: ${stats?.totalIncome}</p>
+      <p>Expenses: ${stats?.totalExpenses}</p>
+    </div>
+  );
+}
+```
+
+### Display Trend Chart
+
+```javascript
+import { getMonthlyTrend } from '@/services/api';
+import { LineChart, Line, XAxis, YAxis } from 'recharts';
+
+export default function TrendChart() {
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    getMonthlyTrend().then(result => {
+      if (result.success) {
+        setData(result.data);
+      }
+    });
+  }, []);
+
+  return (
+    <LineChart data={data}>
+      <XAxis dataKey="month" />
+      <YAxis />
+      <Line type="monotone" dataKey="income" stroke="#10b981" />
+      <Line type="monotone" dataKey="expense" stroke="#ef4444" />
+    </LineChart>
+  );
+}
+```
+
+---
+
+## 🔍 Search & Filter
+
+### Implement Global Search
+
+```javascript
+export default function TransactionPage() {
+  const [search, setSearch] = useState('');
+  const setGlobalSearch = useStore((s) => s.setGlobalSearch);
+
+  useEffect(() => {
+    // Debounce search
+    const timer = setTimeout(() => {
+      setGlobalSearch(search);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [search, setGlobalSearch]);
+
+  return (
+    <input
+      type="text"
+      placeholder="Search..."
+      value={search}
+      onChange={(e) => setSearch(e.target.value)}
+    />
+  );
+}
+```
+
+### Apply Multiple Filters
+
+```javascript
+const filtered = transactions.filter(tx => {
+  if (typeFilter !== 'All' && tx.type !== typeFilter) return false;
+  if (categoryFilter !== 'All' && tx.category !== categoryFilter) return false;
+  if (dateFrom && tx.date < dateFrom) return false;
+  if (dateTo && tx.date > dateTo) return false;
+  if (minAmount && tx.amount < minAmount) return false;
+  if (maxAmount && tx.amount > maxAmount) return false;
+  return true;
+});
+```
+
+---
+
+## 📤 Export to CSV
+
+### Using CSV Export Utility
+
+```javascript
+import { exportToCSV } from '@/utils/csvExport';
+
+const handleExport = () => {
+  const data = filteredTransactions.map(tx => ({
+    Date: tx.date,
+    Description: tx.description,
+    Amount: tx.amount,
+    Category: tx.category,
+    Type: tx.type,
+    Status: tx.status,
+  }));
+
+  const filename = `transactions_${new Date().toISOString().split('T')[0]}.csv`;
+  exportToCSV(data, filename);
+};
+```
+
+---
+
+## 📱 Responsive Design
+
+### Mobile-First Classes
+
+```javascript
+// Tailwind responsive design
+<div className="p-4 sm:p-6 lg:p-8">
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    {/* Cards */}
+  </div>
+</div>
+```
+
+### Conditional Rendering
+
+```javascript
+const isMobile = window.innerWidth < 640;
+
+return isMobile ? <MobileLayout /> : <DesktopLayout />;
+```
+
+---
+
+## 🔔 Notifications
+
+### Show Toast Message
+
+```javascript
+import Toast from '@/components/Toast';
+
+const [toast, setToast] = useState(null);
+
+const showNotification = (message, type = 'info') => {
+  setToast({ message, type });
+  setTimeout(() => setToast(null), 3000);
+};
+
+return (
+  <>
+    {toast && <Toast message={toast.message} type={toast.type} />}
+  </>
+);
+```
+
+### Notification Types
+
+```javascript
+setToast({ message: 'Success!', type: 'success' }); // ✅
+setToast({ message: 'Error!', type: 'error' });     // ❌
+setToast({ message: 'Info', type: 'info' });        // ℹ️
+setToast({ message: 'Deleted', type: 'delete' });   // 🗑️
+```
+
+---
+
+## 🧪 Testing Patterns
+
+### Testing Store Actions
+
+```javascript
+import { renderHook, act } from '@testing-library/react';
+import useStore from '@/store/useStore';
+
+test('should add transaction', () => {
+  const { result } = renderHook(() => useStore());
+
+  act(() => {
+    result.current.addTransaction({
+      date: '2026-04-02',
+      description: 'Test',
+      amount: 10,
+      category: 'Food & Dining',
+      type: 'Expense'
+    });
+  });
+
+  expect(result.current.transactions).toHaveLength(151);
+});
+```
+
+---
+
+**Last Updated:** April 2, 2026 | **Version:** 1.0

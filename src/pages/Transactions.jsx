@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Tooltip } from '@heroui/react';
-import { Plus, Download } from 'lucide-react';
+import { Plus, Download, ArrowUpDown, ArrowUp, ArrowDown, X } from 'lucide-react';
 import useStore from '../store/useStore';
 import RoleGuard from '../components/RoleGuard';
 import Toast from '../components/Toast';
@@ -357,6 +357,91 @@ export default function Transactions() {
             />
           </div>
         </div>
+
+        {/* Active Filters Display */}
+        {hasActiveFilters && (
+          <div className="p-3 rounded-lg border" style={{ backgroundColor: 'var(--bg-input)', borderColor: 'var(--border-subtle)' }}>
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-xs font-semibold" style={{ color: 'var(--text-secondary)' }}>
+                🔍 Active Filters:
+              </p>
+              <button
+                onClick={clearFilters}
+                className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded transition-colors"
+                style={{
+                  backgroundColor: 'var(--bg-surface)',
+                  color: '#ef4444',
+                }}
+                onMouseEnter={(e) => e.target.style.backgroundColor = 'rgba(239, 68, 68, 0.1)'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = 'var(--bg-surface)'}
+              >
+                <X size={12} />
+                Clear All
+              </button>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {search && (
+                <div className="px-2 py-1 text-xs rounded-full flex items-center gap-1.5" style={{ backgroundColor: 'var(--bg-surface)', color: 'var(--text-secondary)' }}>
+                  🔎 Search: "{search}"
+                  <button onClick={() => setSearch('')} className="ml-1 hover:text-red-400"><X size={12} /></button>
+                </div>
+              )}
+              {typeFilter !== 'All' && (
+                <div className="px-2 py-1 text-xs rounded-full flex items-center gap-1.5" style={{ backgroundColor: 'var(--bg-surface)', color: 'var(--text-secondary)' }}>
+                  📁 Type: {typeFilter}
+                  <button onClick={() => setTypeFilter('All')} className="ml-1 hover:text-red-400"><X size={12} /></button>
+                </div>
+              )}
+              {categoryFilter !== 'All' && (
+                <div className="px-2 py-1 text-xs rounded-full flex items-center gap-1.5" style={{ backgroundColor: 'var(--bg-surface)', color: 'var(--text-secondary)' }}>
+                  📂 Category: {categoryFilter}
+                  <button onClick={() => setCategoryFilter('All')} className="ml-1 hover:text-red-400"><X size={12} /></button>
+                </div>
+              )}
+              {statusFilter !== 'All' && (
+                <div className="px-2 py-1 text-xs rounded-full flex items-center gap-1.5" style={{ backgroundColor: 'var(--bg-surface)', color: 'var(--text-secondary)' }}>
+                  ✓ Status: {statusFilter}
+                  <button onClick={() => setStatusFilter('All')} className="ml-1 hover:text-red-400"><X size={12} /></button>
+                </div>
+              )}
+              {dateFrom && (
+                <div className="px-2 py-1 text-xs rounded-full flex items-center gap-1.5" style={{ backgroundColor: 'var(--bg-surface)', color: 'var(--text-secondary)' }}>
+                  📅 From: {dateFrom}
+                  <button onClick={() => setDateFrom('')} className="ml-1 hover:text-red-400"><X size={12} /></button>
+                </div>
+              )}
+              {dateTo && (
+                <div className="px-2 py-1 text-xs rounded-full flex items-center gap-1.5" style={{ backgroundColor: 'var(--bg-surface)', color: 'var(--text-secondary)' }}>
+                  📅 To: {dateTo}
+                  <button onClick={() => setDateTo('')} className="ml-1 hover:text-red-400"><X size={12} /></button>
+                </div>
+              )}
+              {minAmount && (
+                <div className="px-2 py-1 text-xs rounded-full flex items-center gap-1.5" style={{ backgroundColor: 'var(--bg-surface)', color: 'var(--text-secondary)' }}>
+                  💰 Min: {formatCurrency(minAmount)}
+                  <button onClick={() => setMinAmount('')} className="ml-1 hover:text-red-400"><X size={12} /></button>
+                </div>
+              )}
+              {maxAmount && (
+                <div className="px-2 py-1 text-xs rounded-full flex items-center gap-1.5" style={{ backgroundColor: 'var(--bg-surface)', color: 'var(--text-secondary)' }}>
+                  💰 Max: {formatCurrency(maxAmount)}
+                  <button onClick={() => setMaxAmount('')} className="ml-1 hover:text-red-400"><X size={12} /></button>
+                </div>
+              )}
+              {merchantFilter && (
+                <div className="px-2 py-1 text-xs rounded-full flex items-center gap-1.5" style={{ backgroundColor: 'var(--bg-surface)', color: 'var(--text-secondary)' }}>
+                  🏪 Merchant: "{merchantFilter}"
+                  <button onClick={() => setMerchantFilter('')} className="ml-1 hover:text-red-400"><X size={12} /></button>
+                </div>
+              )}
+              {sortField !== 'date' && (
+                <div className="px-2 py-1 text-xs rounded-full flex items-center gap-1.5" style={{ backgroundColor: 'var(--bg-surface)', color: 'var(--text-secondary)' }}>
+                  🔤 Sort: {sortField} ({sortDirection})
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Table */}

@@ -40,7 +40,7 @@ export default function Topbar() {
 
   return (
     <header 
-      className="sticky top-0 z-30 w-full backdrop-blur-xl"
+      className="sticky top-0 z-30 w-full backdrop-blur-xl relative"
       style={{
         backgroundColor: 'var(--bg-topbar)',
         borderColor: 'var(--border-subtle)',

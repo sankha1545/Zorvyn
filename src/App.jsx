@@ -1,23 +1,13 @@
 import { useEffect } from 'react';
 import { Layout } from './components/Layout';
-import Dashboard from './pages/Dashboard';
-import Transactions from './pages/Transactions';
-import Settings from './pages/Settings';
 import useStore from './store/useStore';
+import { getRouteComponent } from './appRouter';
 
 function AppContent() {
   const activePage = useStore((s) => s.activePage);
-
-  switch (activePage) {
-    case 'dashboard':
-      return <Dashboard />;
-    case 'transactions':
-      return <Transactions />;
-    case 'settings':
-      return <Settings />;
-    default:
-      return <Dashboard />;
-  }
+  const RouteComponent = getRouteComponent(activePage);
+  
+  return <RouteComponent />;
 }
 
 export default function App() {
