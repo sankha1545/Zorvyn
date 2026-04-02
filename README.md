@@ -1,11 +1,26 @@
 # 💰 FinTrack - Financial Transaction Manager
 
-A modern, professional financial transaction management application built with **React**, **Vite**, and **Zustand**. Designed for efficient money tracking with advanced filtering, sorting, and real-time analytics.
+A modern, professional financial transaction management application built with **React**, **Vite**, **Zustand**, and **Express.js**. Designed for efficient money tracking with advanced filtering, sorting, real-time analytics, and a **real persistent backend**.
 
-![React](https://img.shields.io/badge/React-18.x-blue?style=flat-square&logo=react)
-![Vite](https://img.shields.io/badge/Vite-5.x-purple?style=flat-square&logo=vite)
+![React](https://img.shields.io/badge/React-19.x-blue?style=flat-square&logo=react)
+![Vite](https://img.shields.io/badge/Vite-8.x-purple?style=flat-square&logo=vite)
 ![Node](https://img.shields.io/badge/Node-18+-green?style=flat-square&logo=node.js)
+![Express](https://img.shields.io/badge/Express-4.x-black?style=flat-square&logo=express)
 ![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)
+
+---
+
+## 🎯 What's New - Real Backend with Persistent Storage!
+
+This version includes a **real Express.js backend** with persistent JSON file storage:
+
+✅ **Express Server** - Running on `http://localhost:5000`  
+✅ **JSON Database** - All transactions stored in `server/db.json`  
+✅ **Real API Endpoints** - Full CRUD operations via REST API  
+✅ **Data Persistence** - Survives server restarts  
+✅ **50+ Seed Transactions** - Realistic initial data  
+
+See [BACKEND_QUICKSTART.md](./BACKEND_QUICKSTART.md) for quick setup!
 
 ---
 
@@ -15,13 +30,14 @@ Quick links to comprehensive documentation:
 
 | Document | Purpose |
 |----------|---------|
-| [📋 Project Structure](./PROJECT_STRUCTURE.md) | Complete directory layout and file organization |
+| [� Backend Quickstart](./BACKEND_QUICKSTART.md) | Getting started with the backend (START HERE!) |
+| [📋 Backend Setup Guide](./BACKEND_SETUP.md) | Detailed backend documentation |
+| [📊 Project Structure](./PROJECT_STRUCTURE.md) | Complete directory layout and file organization |
 | [🔧 API Documentation](./API_DOCUMENTATION.md) | Mock API endpoints and usage |
 | [📖 Implementation Guide](./IMPLEMENTATION_GUIDE.md) | Step-by-step integration guide |
 | [✅ Integration Checklist](./INTEGRATION_CHECKLIST.md) | Feature completion status |
 | [💡 Troubleshooting](./TROUBLESHOOTING.md) | Common issues and solutions |
 | [📝 Implementation Summary](./IMPLEMENTATION_SUMMARY.md) | Technical overview |
-| [⚡ API Quick Reference](./API_QUICK_REFERENCE.md) | Quick API lookup |
 
 ---
 
@@ -51,10 +67,13 @@ Quick links to comprehensive documentation:
 - **Transaction Summary**: Quick overview of key metrics
 - **Responsive Skeleton Loaders**: Smooth loading experience
 
-### 📥 Export & Import
-- **CSV Export**: Export filtered/full transactions dataset
+### 📥 Export Functionality
+- **Export Dropdown**: Single "Export" button with two options:
+  - **CSV Export**: Professional spreadsheet format with headers
+  - **JSON Export**: Complete structured data format (NEW)
 - **Formatted Data**: Professional currency and date formatting
-- **Batch Export**: Export with applied filters
+- **Smart Export**: Export respects all active filters
+- **Timestamped Files**: Files named with export date
 
 ### 👥 Role-Based Access Control (RBAC)
 - **Admin Role**: Full CRUD operations
@@ -177,32 +196,268 @@ Quick links to comprehensive documentation:
 - Node.js 18.x or higher
 - npm or yarn
 
-### Installation
+### Installation & Run (3 Steps)
 
 ```bash
-# Clone repository
-git clone <repository-url>
-cd webapp
-
-# Install dependencies
+# 1. Install dependencies (includes Express backend)
 npm install
 
-# Start development server
-npm run dev
+# 2. Run both backend and frontend together
+npm run dev:all
 
-# Build for production
-npm run build
-
-# Preview production build
-npm run preview
+# 3. Open browser to http://localhost:5173
 ```
 
-### Default Access
-The app runs with mock data and instant access:
+**That's it!** ✅ 
+- Frontend: http://localhost:5173
+- Backend API: http://localhost:5000/api
+- Database: server/db.json
+
+### Alternative: Run Separately
+
+**Terminal 1 - Backend:**
+```bash
+npm run dev:backend
+```
+
+**Terminal 2 - Frontend:**
+```bash
+npm run dev
+```
+
+Then open http://localhost:5173
+
+---
+
+### Default Access  
+The app runs with 50+ realistic seed transactions and instant access:
 - **Admin Access**: Create, edit, delete transactions
 - **Viewer Access**: Read-only view with export capability
 
 Switch roles using the topbar role switcher (Admin/Viewer toggle).
+
+---
+
+## 🗄️ Backend & Database
+
+### How It Works
+
+```
+React Frontend → API Service → Express Backend → server/db.json
+                    (localhost:5000)
+```
+
+All transaction data is **persistently stored** in `server/db.json`:
+- ✅ Survives server restarts
+- ✅ Real CRUD operations
+- ✅ Professional REST API
+- ✅ Full data validation
+
+### Database Location
+```
+webapp/server/db.json
+```
+
+Open it in any text editor to see/edit transactions directly!
+
+### API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/transactions` | Fetch all transactions |
+| POST | `/api/transactions` | Create new transaction |
+| PUT | `/api/transactions/:id` | Update transaction |
+| DELETE | `/api/transactions/:id` | Delete transaction |
+| GET | `/api/analytics` | Get analytics data |
+| POST | `/api/reset` | Reset to seed data |
+
+See [BACKEND_SETUP.md](./BACKEND_SETUP.md) for complete documentation.
+
+---
+
+## 🏗️ Architecture & Technology Stack
+
+### System Architecture
+
+```
+┌─────────────────────────────────────────────────────┐
+│              FRONTEND LAYER                         │
+│  React 18 + Vite + Zustand + Tailwind CSS          │
+│  localhost:5173                                     │
+└────────────────┬────────────────────────────────────┘
+                 │ HTTP Requests (Axios)
+                 ▼
+┌─────────────────────────────────────────────────────┐
+│              BACKEND LAYER                          │
+│  Express.js REST API                                │
+│  localhost:5000/api                                 │
+└────────────────┬────────────────────────────────────┘
+                 │ File I/O Operations
+                 ▼
+┌─────────────────────────────────────────────────────┐
+│              DATA LAYER                             │
+│  JSON File Database (server/db.json)                │
+│  Persistent Storage                                 │
+└─────────────────────────────────────────────────────┘
+```
+
+### Technology Stack
+
+| Layer | Technology | Purpose | Version |
+|-------|-----------|---------|---------|
+| **Frontend Framework** | React | UI library | 18.x |
+| **Build Tool** | Vite | Build & dev server | 5.x |
+| **State Management** | Zustand | Global state | Latest |
+| **Styling** | Tailwind CSS | Utility CSS | 3.x |
+| **UI Components** | HeroUI | Component library | Latest |
+| **Icons** | Lucide React | Icon library | Latest |
+| **HTTP Client** | Axios | API requests | Latest |
+| **Backend Framework** | Express.js | REST API server | 4.x |
+| **Database** | JSON file | Persistent storage | Native |
+| **Runtime** | Node.js | Backend runtime | 18+ |
+| **Charts** | Chart.js | Data visualization | Latest |
+
+### Frontend Architecture
+
+```
+src/
+├── components/              # Reusable UI components
+│   ├── Dashboard/           # Analytics & statistics
+│   ├── Layout/              # Main layout wrapper
+│   ├── Modal/               # Dialog modals
+│   ├── Transactions/        # Transaction-specific components
+│   ├── ui/                  # Base UI components
+│   ├── RoleGuard.jsx        # Authorization wrapper
+│   └── Toast.jsx            # Notification system
+│
+├── pages/                   # Page-level components
+│   ├── Dashboard.jsx        # Analytics dashboard
+│   ├── Transactions.jsx     # Transaction management
+│   ├── Settings.jsx         # User settings
+│   └── Auth/                # Authentication pages
+│
+├── store/                   # Zustand state management
+│   └── useStore.js          # Global store
+│
+├── hooks/                   # Custom React hooks
+│   ├── useApi.js            # API communication
+│   └── index.js             # Hook exports
+│
+├── services/                # External services
+│   ├── api.js               # API configuration
+│   └── index.js             # Service exports
+│
+└── utils/                   # Utility functions
+    ├── theme.js             # Theme management
+    ├── csvExport.js         # CSV export logic
+    └── countriesAPI.js      # Country data
+```
+
+### Backend Architecture
+
+```
+server/
+├── index.js                 # Express server entry point
+├── db.json                  # JSON database (persistent)
+├── middleware/              # Express middleware
+│   ├── auth.js              # Authentication
+│   └── validation.js        # Input validation
+├── routes/                  # API route handlers
+│   ├── transactions.js      # Transaction CRUD
+│   └── analytics.js         # Analytics endpoints
+└── utils/                   # Helper functions
+    ├── seed.js              # Database seed data
+    └── validators.js        # Data validation
+```
+
+### Data Flow
+
+**Create Transaction:**
+```
+UI Form → Validation → API Call (POST) → Express Route
+  ↓
+Middleware Validation → useStore update → db.json write
+  ↓
+Response → Frontend Update → Toast Notification
+```
+
+**Read Transactions:**
+```
+Component Mount → useApi hook → API Call (GET)
+  ↓
+Express Route → Read db.json → Filter/Sort
+  ↓
+Response → Store Update → Component Re-render
+  ↓
+Display with Pagination/Filtering
+```
+
+**Update Transaction:**
+```
+Edit Form → Validation → API Call (PUT/:id)
+  ↓
+Express Route Finds Transaction → Update in db.json
+  ↓
+Response → Store Update → UI Refresh → Success Toast
+```
+
+**Delete Transaction:**
+```
+Delete Confirmation → API Call (DELETE/:id)
+  ↓
+Express Route Removes from db.json
+  ↓
+Response → Store Update → List Refresh → Success Toast
+```
+
+### State Management (Zustand)
+
+```javascript
+// Global store structure
+{
+  // Transactions
+  transactions: [],
+  transactionsLoading: false,
+  transactionsError: null,
+  
+  // Filters
+  filters: {
+    search: '',
+    type: 'all',
+    category: 'all',
+    status: 'all',
+    dateRange: { from: '', to: '' },
+    amountRange: { min: 0, max: Infinity },
+    merchant: ''
+  },
+  
+  // Pagination
+  pagination: { page: 1, itemsPerPage: 10 },
+  
+  // UI
+  theme: 'light',
+  modals: { create: false, edit: false, delete: false },
+  
+  // Auth
+  role: 'admin',
+  user: {}
+}
+```
+
+### API Response Format
+
+```javascript
+{
+  success: true,
+  data: {
+    transactions: [...],
+    total: 500,
+    page: 1,
+    itemsPerPage: 10
+  },
+  message: "Success"
+}
+```
 
 ---
 
