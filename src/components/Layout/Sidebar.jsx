@@ -65,24 +65,15 @@ export default function Sidebar() {
                 transition-all duration-200 outline-none cursor-pointer
                 ${isActive
                   ? 'bg-indigo-500/15 text-indigo-400 shadow-sm'
-                  : ''
+                  : 'hover:[background-color:var(--bg-surface-hover)] hover:[color:var(--text-secondary)]'
                 }
                 ${!sidebarOpen ? 'justify-center' : ''}
               `}
-              style={!isActive ? {
+              style={isActive ? {
+                backgroundColor: 'rgba(99, 102, 241, 0.15)',
+                color: 'rgb(129, 140, 248)',
+              } : {
                 color: 'var(--text-muted)',
-              } : {}}
-              onMouseEnter={(e) => {
-                if (!isActive) {
-                  e.currentTarget.style.backgroundColor = 'var(--bg-surface-hover)';
-                  e.currentTarget.style.color = 'var(--text-secondary)';
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!isActive) {
-                  e.currentTarget.style.backgroundColor = 'transparent';
-                  e.currentTarget.style.color = 'var(--text-muted)';
-                }
               }}
             >
               <Icon size={18} strokeWidth={isActive ? 2.5 : 2} />
@@ -117,17 +108,9 @@ export default function Sidebar() {
       <div className="hidden lg:block px-3 pb-4">
         <button
           onClick={toggleSidebar}
-          className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-medium transition-all cursor-pointer"
+          className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-medium transition-all cursor-pointer hover:[background-color:var(--bg-surface-hover)] hover:[color:var(--text-secondary)]"
           style={{
             color: 'var(--text-muted)',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = 'var(--bg-surface-hover)';
-            e.currentTarget.style.color = 'var(--text-secondary)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = 'transparent';
-            e.currentTarget.style.color = 'var(--text-muted)';
           }}
         >
           {sidebarOpen ? (
