@@ -183,9 +183,16 @@ const useStore = create((set, get) => ({
     }
   },
 
-  // Navigation state
-  activePage: 'dashboard', // 'dashboard' | 'transactions' | 'settings'
-  setActivePage: (page) => set({ activePage: page }),
+  // Navigation state - persisted to localStorage
+  activePage: typeof localStorage !== 'undefined' 
+    ? localStorage.getItem('fintrack-activePage') || 'dashboard'
+    : 'dashboard',
+  setActivePage: (page) => {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('fintrack-activePage', page);
+    }
+    set({ activePage: page });
+  },
 
   // Analytics state
   analytics: null,
@@ -300,6 +307,21 @@ const useStore = create((set, get) => ({
   // Loading simulation
   isLoading: true,
   setIsLoading: (loading) => set({ isLoading: loading }),
+
+  // App initialization
+  initializeApp: async () => {
+    const state = get();
+    // Initialize theme
+    state.initTheme();
+    // Initialize profile
+    state.initProfile();
+    // Load transactions from backend
+    await state.initializeTransactions();
+    // Load analytics
+    await state.fetchAnalytics();
+    // Load monthly trend
+    await state.fetchMonthlyTrend();
+  },
 }));
 
 export default useStore;

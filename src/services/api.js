@@ -1,41 +1,10 @@
 /**
- * Mock API Service
- * Simulates REST API calls with realistic delays and error handling
- * WITH PERSISTENT STORAGE using localStorage
+ * FinTrack API Service
+ * Calls real Express backend at http://localhost:5000
+ * All data is persisted to server/db.json
  */
 
-import { transactions as mockTransactions } from '../data/mockData';
-
-// localStorage key for persistent storage
-const STORAGE_KEY = 'fintrack_transactions_db';
-
-// Initialize database from localStorage or mock data
-const initializeDb = () => {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      return JSON.parse(stored);
-    }
-  } catch (e) {
-    console.error('Failed to load from localStorage:', e);
-  }
-  return JSON.parse(JSON.stringify(mockTransactions));
-};
-
-// Save database to localStorage
-const saveDb = (data) => {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  } catch (e) {
-    console.error('Failed to save to localStorage:', e);
-  }
-};
-
-// Simulated database storage (persistent via localStorage)
-let transactionsDb = initializeDb();
-
-// Simulate network delay (ms)
-const NETWORK_DELAY = 500;
+const API_BASE = 'http://localhost:5000/api';
 
 // API Response wrapper
 const createResponse = (success, data = null, error = null) => ({
@@ -45,9 +14,14 @@ const createResponse = (success, data = null, error = null) => ({
   timestamp: new Date().toISOString(),
 });
 
-// Simulate network latency
-const delay = (ms = NETWORK_DELAY) =>
-  new Promise((resolve) => setTimeout(resolve, ms));
+// Helper to handle API errors
+const handleError = (error) => {
+  console.error('API Error:', error);
+  return createResponse(false, null, {
+    message: error.message || 'API request failed',
+    details: error.message,
+  });
+};
 
 /**
  * TRANSACTION APIs
@@ -56,38 +30,50 @@ const delay = (ms = NETWORK_DELAY) =>
 // GET: Fetch all transactions
 export const getTransactions = async (options = {}) => {
   try {
-    await delay();
+    const response = await fetch(`${API_BASE}/transactions`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    const result = await response.json();
     
-    let result = [...transactionsDb];
+    if (!result.success) {
+      return result;
+    }
 
-    // Filter by type if provided
+    let transactions = result.data.transactions || [];
+
+    // Client-side filtering
     if (options.type && options.type !== 'All') {
-      result = result.filter((t) => t.type === options.type);
+      transactions = transactions.filter((t) => t.type === options.type);
     }
 
-    // Filter by category if provided
     if (options.category && options.category !== 'All') {
-      result = result.filter((t) => t.category === options.category);
+      transactions = transactions.filter((t) => t.category === options.category);
     }
 
-    // Filter by status if provided
     if (options.status && options.status !== 'All') {
-      result = result.filter((t) => t.status === options.status);
+      transactions = transactions.filter((t) => t.status === options.status);
     }
 
-    // Search if provided
     if (options.search) {
       const searchLower = options.search.toLowerCase();
-      result = result.filter(
+      transactions = transactions.filter(
         (t) =>
           t.description.toLowerCase().includes(searchLower) ||
           t.merchant.toLowerCase().includes(searchLower)
       );
     }
 
-    // Sort if provided
+    // Sorting
     if (options.sortBy) {
-      result.sort((a, b) => {
+      transactions.sort((a, b) => {
         const order = options.sortOrder === 'desc' ? -1 : 1;
         if (a[options.sortBy] < b[options.sortBy]) return -1 * order;
         if (a[options.sortBy] > b[options.sortBy]) return 1 * order;
@@ -95,29 +81,37 @@ export const getTransactions = async (options = {}) => {
       });
     }
 
-    // Pagination if provided
-    if (options.skip && options.limit) {
-      result = result.slice(options.skip, options.skip + options.limit);
+    // Pagination
+    if (options.skip !== undefined && options.limit) {
+      transactions = transactions.slice(options.skip, options.skip + options.limit);
     }
 
     return createResponse(true, {
-      transactions: result,
-      total: transactionsDb.length,
-      count: result.length,
+      transactions,
+      total: result.data.transactions.length,
+      count: transactions.length,
     });
   } catch (error) {
-    return createResponse(false, null, {
-      message: 'Failed to fetch transactions',
-      details: error.message,
-    });
+    return handleError(error);
   }
 };
 
 // GET: Fetch transaction by ID
 export const getTransactionById = async (id) => {
   try {
-    await delay();
-    const transaction = transactionsDb.find((t) => t.id === id);
+    const response = await fetch(`${API_BASE}/transactions`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    const result = await response.json();
+    const transaction = result.data.transactions.find((t) => t.id === id);
 
     if (!transaction) {
       return createResponse(false, null, {
@@ -127,10 +121,7 @@ export const getTransactionById = async (id) => {
 
     return createResponse(true, transaction);
   } catch (error) {
-    return createResponse(false, null, {
-      message: 'Failed to fetch transaction',
-      details: error.message,
-    });
+    return handleError(error);
   }
 };
 
@@ -148,118 +139,89 @@ export const createTransaction = async (transactionData) => {
       });
     }
 
-    await delay();
+    const response = await fetch(`${API_BASE}/transactions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(transactionData),
+    });
 
-    const newTransaction = {
-      id: `TXN-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      ...transactionData,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
 
-    transactionsDb.push(newTransaction);
-    saveDb(transactionsDb); // Persist to localStorage
+    const result = await response.json();
+
+    if (!result.success) {
+      return result;
+    }
 
     return createResponse(true, {
       message: 'Transaction created successfully',
-      transaction: newTransaction,
+      transaction: result.data.transaction,
     });
   } catch (error) {
-    return createResponse(false, null, {
-      message: 'Failed to create transaction',
-      details: error.message,
-    });
+    return handleError(error);
   }
 };
 
 // PUT: Update transaction
 export const updateTransaction = async (id, updateData) => {
   try {
-    await delay();
+    const response = await fetch(`${API_BASE}/transactions/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updateData),
+    });
 
-    const transactionIndex = transactionsDb.findIndex((t) => t.id === id);
-
-    if (transactionIndex === -1) {
-      return createResponse(false, null, {
-        message: `Transaction with id ${id} not found`,
-      });
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
 
-    const updatedTransaction = {
-      ...transactionsDb[transactionIndex],
-      ...updateData,
-      id: transactionsDb[transactionIndex].id, // Preserve original ID
-      createdAt: transactionsDb[transactionIndex].createdAt, // Preserve created date
-      updatedAt: new Date().toISOString(),
-    };
+    const result = await response.json();
 
-    transactionsDb[transactionIndex] = updatedTransaction;
-    saveDb(transactionsDb); // Persist to localStorage
+    if (!result.success) {
+      return result;
+    }
 
     return createResponse(true, {
       message: 'Transaction updated successfully',
-      transaction: updatedTransaction,
+      transaction: result.data.transaction,
     });
   } catch (error) {
-    return createResponse(false, null, {
-      message: 'Failed to update transaction',
-      details: error.message,
-    });
+    return handleError(error);
   }
 };
 
 // DELETE: Delete transaction
 export const deleteTransaction = async (id) => {
   try {
-    await delay();
+    const response = await fetch(`${API_BASE}/transactions/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
-    const transactionIndex = transactionsDb.findIndex((t) => t.id === id);
-
-    if (transactionIndex === -1) {
-      return createResponse(false, null, {
-        message: `Transaction with id ${id} not found`,
-      });
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
 
-    const deletedTransaction = transactionsDb.splice(transactionIndex, 1)[0];
-    saveDb(transactionsDb); // Persist to localStorage
+    const result = await response.json();
+
+    if (!result.success) {
+      return result;
+    }
 
     return createResponse(true, {
       message: 'Transaction deleted successfully',
-      transaction: deletedTransaction,
+      transaction: result.data.transaction,
     });
   } catch (error) {
-    return createResponse(false, null, {
-      message: 'Failed to delete transaction',
-      details: error.message,
-    });
-  }
-};
-
-// BATCH: Delete multiple transactions
-export const deleteTransactions = async (ids) => {
-  try {
-    await delay();
-
-    const deletedTransactions = [];
-    ids.forEach((id) => {
-      const index = transactionsDb.findIndex((t) => t.id === id);
-      if (index !== -1) {
-        deletedTransactions.push(transactionsDb.splice(index, 1)[0]);
-      }
-    });
-    saveDb(transactionsDb); // Persist to localStorage
-
-    return createResponse(true, {
-      message: `${deletedTransactions.length} transaction(s) deleted successfully`,
-      count: deletedTransactions.length,
-      transactions: deletedTransactions,
-    });
-  } catch (error) {
-    return createResponse(false, null, {
-      message: 'Failed to delete transactions',
-      details: error.message,
-    });
+    return handleError(error);
   }
 };
 
@@ -270,57 +232,44 @@ export const deleteTransactions = async (ids) => {
 // GET: Analytics dashboard data
 export const getAnalytics = async () => {
   try {
-    await delay();
-
-    const incomeTransactions = transactionsDb.filter(
-      (t) => t.type === 'Income'
-    );
-    const expenseTransactions = transactionsDb.filter(
-      (t) => t.type === 'Expense'
-    );
-
-    const totalIncome = incomeTransactions.reduce(
-      (sum, t) => sum + parseFloat(t.amount),
-      0
-    );
-    const totalExpense = expenseTransactions.reduce(
-      (sum, t) => sum + parseFloat(t.amount),
-      0
-    );
-
-    const balance = totalIncome - totalExpense;
-
-    // Category breakdown
-    const categoryBreakdown = {};
-    expenseTransactions.forEach((t) => {
-      categoryBreakdown[t.category] =
-        (categoryBreakdown[t.category] || 0) + parseFloat(t.amount);
+    const response = await fetch(`${API_BASE}/analytics`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
     });
 
-    return createResponse(true, {
-      totalIncome,
-      totalExpense,
-      balance,
-      transactionCount: transactionsDb.length,
-      categoryBreakdown,
-      savingsRate: totalIncome > 0 ? ((balance / totalIncome) * 100).toFixed(1) : 0,
-    });
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    const result = await response.json();
+    return result;
   } catch (error) {
-    return createResponse(false, null, {
-      message: 'Failed to fetch analytics',
-      details: error.message,
-    });
+    return handleError(error);
   }
 };
 
 // GET: Monthly trend data
 export const getMonthlyTrend = async () => {
   try {
-    await delay();
+    const response = await fetch(`${API_BASE}/transactions`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    const result = await response.json();
+    const transactions = result.data.transactions || [];
 
     const monthlyData = {};
 
-    transactionsDb.forEach((t) => {
+    transactions.forEach((t) => {
       const date = new Date(t.date + 'T00:00:00');
       const monthKey = date.toLocaleDateString('en-US', {
         year: 'numeric',
@@ -346,10 +295,7 @@ export const getMonthlyTrend = async () => {
 
     return createResponse(true, trend);
   } catch (error) {
-    return createResponse(false, null, {
-      message: 'Failed to fetch monthly trend',
-      details: error.message,
-    });
+    return handleError(error);
   }
 };
 
@@ -357,105 +303,44 @@ export const getMonthlyTrend = async () => {
  * UTILITY APIs
  */
 
-// GET: Database statistics
-export const getDatabaseStats = async () => {
+// GET: Health check
+export const healthCheck = async () => {
   try {
-    await delay();
-
-    return createResponse(true, {
-      totalTransactions: transactionsDb.length,
-      databaseSize: JSON.stringify(transactionsDb).length + ' bytes',
-      lastUpdated: new Date().toISOString(),
+    const response = await fetch(`${API_BASE}/health`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
     });
-  } catch (error) {
-    return createResponse(false, null, {
-      message: 'Failed to fetch database stats',
-      details: error.message,
-    });
-  }
-};
 
-// POST: Reset database to mock data
-export const resetDatabase = async () => {
-  try {
-    await delay();
-
-    transactionsDb = JSON.parse(JSON.stringify(mockTransactions));
-    saveDb(transactionsDb); // Persist to localStorage
-
-    return createResponse(true, {
-      message: 'Database reset to mock data successfully',
-      count: transactionsDb.length,
-    });
-  } catch (error) {
-    return createResponse(false, null, {
-      message: 'Failed to reset database',
-      details: error.message,
-    });
-  }
-};
-
-/**
- * EXPORT APIs
- */
-
-// GET: Export transactions as JSON
-export const exportTransactionsJSON = async (filters = {}) => {
-  try {
-    await delay();
-
-    const response = await getTransactions(filters);
-    if (!response.success) {
-      throw new Error(response.error.message);
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
 
-    const exportData = {
-      exportDate: new Date().toISOString(),
-      totalCount: response.data.total,
-      transactions: response.data.transactions,
-    };
-
-    return createResponse(true, exportData);
+    const result = await response.json();
+    return createResponse(true, result);
   } catch (error) {
-    return createResponse(false, null, {
-      message: 'Failed to export transactions',
-      details: error.message,
-    });
+    return handleError(error);
   }
 };
 
-// GET: Get transaction stats by category
-export const getTransactionsByCategory = async () => {
+// POST: Reset database
+export const resetDatabase = async () => {
   try {
-    await delay();
-
-    const categoryData = {};
-
-    transactionsDb.forEach((t) => {
-      if (!categoryData[t.category]) {
-        categoryData[t.category] = {
-          count: 0,
-          total: 0,
-          income: 0,
-          expense: 0,
-        };
-      }
-
-      categoryData[t.category].count += 1;
-      categoryData[t.category].total += parseFloat(t.amount);
-
-      if (t.type === 'Income') {
-        categoryData[t.category].income += parseFloat(t.amount);
-      } else {
-        categoryData[t.category].expense += parseFloat(t.amount);
-      }
+    const response = await fetch(`${API_BASE}/reset`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
     });
 
-    return createResponse(true, categoryData);
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    const result = await response.json();
+    return result;
   } catch (error) {
-    return createResponse(false, null, {
-      message: 'Failed to fetch category stats',
-      details: error.message,
-    });
+    return handleError(error);
   }
 };

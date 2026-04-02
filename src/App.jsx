@@ -12,20 +12,22 @@ function AppContent() {
 
 export default function App() {
   const setIsLoading = useStore((s) => s.setIsLoading);
-  const initTheme = useStore((s) => s.initTheme);
+  const initializeApp = useStore((s) => s.initializeApp);
 
-  // Initialize theme on mount
+  // Initialize app on mount - load all data from backend
   useEffect(() => {
-    initTheme();
-  }, [initTheme]);
+    const loadApp = async () => {
+      try {
+        await initializeApp();
+      } catch (error) {
+        console.error('Error initializing app:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  // Simulate initial data loading
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1200);
-    return () => clearTimeout(timer);
-  }, [setIsLoading]);
+    loadApp();
+  }, []);
 
   return (
     <Layout>
